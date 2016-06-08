@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Insert title here</title>
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/style.css" rel="stylesheet">
+<style type="text/css">
+body {
+	margin: 0;
+	overflow: hidden;
+	background: #fff;
+}
+div {
+margin : 0;
+padding : 0;
+}
+#map {
+	position: relative;
+	height: 553px;
+	border: 1px solid #3473b7;
+}
+
+#panel {
+	position : absolute;
+	right: 10px;
+	top:  125px;
+/* 	height: 30px; */
+	width: 50px;
+}
+
+#panel div {
+	float: left;
+	margin: 5px;
+}
+
+.smPopupContent {
+    overflow: hidden !important;
+    z-index : 19999 ;
+}
+
+/* 거리, 면적 측정 Style */
+div.smControlMeasurePopup {
+	text-align:center;
+	padding : 3px;
+	vertical-align: middle;
+	border: none;
+	background: #ffffff;
+	color: #000000;
+	font:12px 굴림;
+	overflow : hidden;
+	height:20px;
+}
+
+/* 이동 팝업 내부 내용 창 */
+div.smControlMeasureContent {
+	vertical-align: middle;
+	border: none;
+	background: rgba(255, 255, 255, 0.5);
+	color: #000000;
+	font:12px 굴림;
+	overflow : hidden;
+	width:150px;
+}
+
+div.measureClose {
+	position : absolute;
+	top:3px;
+	right:3px;
+}
+
+/* 팝업 내부 글자 색 (빨간색) */
+span.MeasureColorRed {
+	color: #000000;
+}
+
+/* 시작 창 */
+div.smControlMeasurePopupStart {
+	width:36px;
+}
+
+/* 총 거리 */
+div.smControlMeasureContent div.MeasureAllDist {
+	font:12px 굴림;
+}
+div.smControlMeasureContent span.measureResTit {
+	display : inline-block;
+	width:50px;
+}
+div.smControlMeasureContent span.measureResCon {
+	color:#000000;
+	font:12px 굴림;
+} 
+
+</style>
+<script type="text/javascript"
+	src="js/supermap/libs/proj4js/proj4js-compressed.js"></script>
+<script type="text/javascript"
+	src="js/supermap/libs/SuperMap.Include.js"></script>
+<script type="text/javascript"
+	src="js/supermap/libs/VWorldLayer.js"></script>
+<script type="text/javascript"
+	src="js/supermap/libs/MeasureCustom.js"></script>
+<script type="text/javascript" src="js/jquery-1.12.3.js"></script>
+<script type="text/javascript" src="js/bootstrap.js"></script>
+
+<script type="text/javascript">
+var map, nav,baseLayer,satelliteLayer, drawLine,vector, lineLayer, pane, drawPolygon, polygonLayer, 
+	host = document.location.toString().match(/file:\/\//) ? "http://localhost:8090"
+		: 'http://61.32.6.18:8091';
+var url = host + "/iserver/services/map-vWorld_Test/rest/maps/SGG_5186";
+var style = {
+	strokeColor: "#304DBE",
+	strokeWidth: 2,
+	pointerEvents: "visiblePainted",
+	fillColor: "#304DBE",
+	fillOpacity: 0.8
+}
+//거리, 면적 측정 스타일
+var measureStyleMap = new SuperMap.StyleMap({
+	'default': new SuperMap.Style(null, {
+		rules: [new SuperMap.Rule({
+			symbolizer : {
+				"Point": {
+					pointRadius: 4,
+					graphicName: "square",
+					fillColor: "#ffffff",
+					fillOpacity: 1,
+					strokeWidth: 1,
+					strokeOpacity: 1,
+					strokeColor: "#ff0000"
+				},
+				"Line": {
+					strokeWidth: 3,
+					strokeOpacity: 0.7,
+					strokeColor: "#ff0000"
+				},
+				"Polygon": {
+					strokeWidth: 3,
+					strokeOpacity: 0.7,
+					strokeColor: "#ff0000",
+					fillColor: "#ff0000",
+					fillOpacity: 0.3
+				}
+			}
+		})]
+	})
+});
+
+var squareUnits = "SQUARE"
+$(document).ready(function() {
+	//new line vector layer
+	lineLayer = new SuperMap.Layer.Vector("lineLayer",{projection:"EPSG:900913",units:"m"});
+	vector = new SuperMap.Layer.Vector("vector",{projection:"EPSG:900913",units:"m"});
+	//Apply the style to the line layer
+	lineLayer.style = style;
+
+	//Create the line control. The layer is lineLayer; here is DrawFeature (layer, type, attribute); whether to put the multi:true to geomatric layer before put the feature to the layer
+	drawLine = new SuperMap.Control.DrawFeature(lineLayer, SuperMap.Handler.Path, { multi: true });
+	drawLine.events.on({"featureadded": drawLineCompleted});
+
+	//new region vector layer
+	polygonLayer = new SuperMap.Layer.Vector("polygonLayer",{projection:"EPSG:900913",units:"m"});
+	//Apply the style to the region layer
+	polygonLayer.style = style;
+	
+	//Create the video control, the layer is polygonLayer
+	drawPolygon = new SuperMap.Control.DrawFeature(polygonLayer, SuperMap.Handler.Polygon);
+	drawPolygon.events.on({"featureadded": drawPolyGonCompleted});
+	map = new SuperMap.Map("map", {
+		projection:"EPSG:900913",
+		units:"m",
+		//displayProjection:new SuperMap.Projection("EPSG:4326"),
+		maxExtent: new SuperMap.Bounds(-20037508.34, -20037508.34, 20037508.34, 20037508.34),
+		controls : [
+					new SuperMap.Control.LayerSwitcher(), 
+					// 면적 
+		 	        new SuperMap.Control.Measure(SuperMap.Handler.SmcPolygonMeasure, {
+		 	        	id : "area",
+		 	        	persist : true,
+		 	        	handlerOptions: {
+		 	        		multiLine : true,
+		 	        		movePopup : true,
+		 	        		persistControl : true,
+		 	        		layerName : "BiesPolygonMeasure",
+		 	        		layerOptions : {
+		 	        			styleMap: measureStyleMap
+		 	        		}
+		 	    		}
+		 	       }),
+		 	       new SuperMap.Control.Measure(SuperMap.Handler.SmcPathMeasure, {
+			        	id : "distance", 
+			        	persist : true,
+			        	handlerOptions: {
+			        		multiLine : true,
+			        		movePopup : true,
+			        		persistControl : true,
+			        		layerOptions : {
+			        			styleMap: measureStyleMap
+			        		}
+			    		}
+			        }),
+			        
+		 	     	// 반경 
+			        new SuperMap.Control.Measure(SuperMap.Handler.SmcCircle, {
+			        	id : "circle",
+			        	persist : true,
+			        	handlerOptions: {
+			        		multiLine : false,
+			        		movePopup : true,
+			        		persistControl : true,
+		
+			        		sides:50,
+			        		radius:0,
+			        		angle:0
+			    		}
+			        }),
+					new SuperMap.Control.Zoom() ,
+					new SuperMap.Control.Navigation({
+						id:"pan",
+						dragPanOptions: {
+						enableKinetic: true
+					}}),
+					drawLine,
+					drawPolygon
+				]
+	});
+	map.addControl(new SuperMap.Control.MousePosition());
+	//Initialize the layer
+	baseLayer = new SuperMap.Layer.VWorldLayer("Base");
+	satelliteLayer = new SuperMap.Layer.VWorldLayer("영상");
+
+	baseLayer.url = ['http://xdworld.vworld.kr:8080/2d/Base/201310/${z}/${x}/${y}.png'];
+	satelliteLayer.url = ['http://xdworld.vworld.kr:8080/2d/Satellite/201301/${z}/${x}/${y}.jpeg'];		
+	
+	map.addLayers([baseLayer, satelliteLayer,lineLayer,polygonLayer,vector]);
+	map.setCenter(new SuperMap.LonLat(14174150.9795765, 4495339.98139926), 9);
+	
+	
+	$("#btnMove").on("click",function(){
+		smActiveControl("pan");
+		//distanceMeasure();
+	});
+	$("#btnDist").on("click",function(){
+		smActiveControl("distance");
+		//distanceMeasure();
+	});
+	$("#btnArea").on("click",function(){
+		smActiveControl("area");
+		//areaMeasure();
+	});
+	$("#btnTrash").on("click",function(){
+		map.getControl("distance").handler.cleanFeature();
+		map.getControl("area").handler.cleanFeature();
+		smActiveControl("pan");
+		//areaMeasure();
+	});
+	
+});
+function distanceMeasure(){
+	drawLine.activate();
+	
+}
+function areaMeasure(){
+	drawPolygon.activate();
+	
+}
+
+
+
+function drawLineCompleted(drawGeometryArgs) {
+	//Stop the video control
+	drawLine.deactivate();
+	//Get the geometry object of layer
+	var geometry = drawGeometryArgs.feature.geometry;
+	
+	var measureParam = new SuperMap.REST.MeasureParameters(geometry), /* MeasureParameters: measurement parameter class.*/
+	myMeasuerService = new SuperMap.REST.MeasureService(url); //measurement service class
+	myMeasuerService.events.on({ "processCompleted": measureLineCompleted });
+
+	//Determine the type of MeasureService. When it is LineString, it is set as MeasureMode.DISTANCE, or it will be MeasureMode.AREA
+
+	myMeasuerService.measureMode = SuperMap.REST.MeasureMode.DISTANCE;
+	console.log(geometry.components[0].components[0].x);
+	myMeasuerService.processAsync(measureParam); //processAsync pass the measure parameter to the server side.
+	
+	getDistance(geometry.components[0].components);
+}
+
+//Finish event
+function measureLineCompleted(measureEventArgs) {
+	console.log(measureEventArgs);
+	var distance = measureEventArgs.result.distance;
+	var unit = measureEventArgs.result.unit;
+	alert("Result is: "+distance + "Meters");
+}
+
+/**
+ * 직선 거리
+ * 
+ * @param points:Array 라인 패스
+ * @return 
+ * 
+ */		
+function getDistance(points){
+	var distance = 0;
+	var pointStyle = {};
+	pointStyle.fillColor="red";
+	pointStyle.strokeColor="yellow";
+	pointStyle.pointRadius=6;
+	pointStyle.labelAlign="l";
+	pointStyle.labelXOffset = 10;
+	pointStyle.fontColor="orange";
+	for(var index = 0; index < points.length-1; index++){
+		var x1 = points[index].x;
+		var x2 = points[index+1].x;
+		var y1 = points[index].y;
+		var y2 = points[index+1].y;
+		if(index==0){
+			pointStyle.label=distance+"m";
+			var point1= new SuperMap.Geometry.Point(x1,y1);
+			var pointFeature1 = new SuperMap.Feature.Vector(point1,null,pointStyle);
+			vector.addFeatures(pointFeature1);
+		}
+		var currDist = Math.sqrt(Math.pow((x1-x2), 2) + Math.pow((y1-y2), 2));
+		distance += currDist;
+		pointStyle.label=distance+"m";
+		var point= new SuperMap.Geometry.Point(x2,y2);
+		
+		var pointFeature = new SuperMap.Feature.Vector(point,null,pointStyle);
+		vector.addFeatures(pointFeature);
+	}
+
+	return distance+"m";
+}
+
+function drawPolyGonCompleted(drawGeometryArgs) {
+	//Stop the video control
+	drawPolygon.deactivate();
+	//Get the geometry object of layer
+	var geometry = drawGeometryArgs.feature.geometry,
+	measureParam = new SuperMap.REST.MeasureParameters(geometry), 
+	myMeasuerService = new SuperMap.REST.MeasureService(url); //Measure service. This class is used to pass the measurement parameter to the server side, and get the measurement result from server side
+	myMeasuerService.events.on({ "processCompleted": measurePolygonCompleted });
+
+	console.log(geometry);
+	//Determine the type of MeasureService. When it is LineString, it is set as MeasureMode.DISTANCE, or it will be MeasureMode.AREA
+	myMeasuerService.measureMode = SuperMap.REST.MeasureMode.AREA;
+
+	myMeasuerService.processAsync(measureParam); //processAsync pass the measure parameter to the server side.
+}
+
+//Finish event
+function measurePolygonCompleted(measureEventArgs) {
+	console.log(measureEventArgs);
+	var area = measureEventArgs.result.area,
+	unit = measureEventArgs.result.unit;
+	alert("Result is: "+ area + " "+unit);
+}
+function CalcArea (apts) {
+	var workarea = 0.0;
+	var i = apts.length - 1;
+	var j = 0;
+	var 	xjyi,xiyj,xydiff;
+	
+	while (j < apts.length) {
+		xjyi = apts[j].x * apts[i].y;
+		xiyj = apts[i].x * apts[j].y;
+		xydiff = (xjyi - xiyj);
+		workarea = workarea + xydiff;
+		i = j;
+		j = parseFloat(j + 1);  
+	}
+	return Math.abs(workarea / 2);  
+}
+</script>
+</head>
+<body>
+	<div id="map"></div>
+	<div id="panel">
+		<a id="btnMove" class="btn btn-info btn-xs">이동</a>
+		<a id="btnDist" class="btn btn-info btn-xs">거리</a>
+		<a id="btnArea" class="btn btn-info btn-xs">면적</a>
+		<a id="btnTrash" class="btn btn-info btn-xs">삭제</a>
+	</div>
+</body>
+</html>

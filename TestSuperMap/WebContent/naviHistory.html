@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Insert title here</title>
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/style.css" rel="stylesheet">
+<style type="text/css">
+body {
+	margin: 0;
+	overflow: hidden;
+	background: #fff;
+}
+
+#map {
+	position: relative;
+	height: 553px;
+	border: 1px solid #3473b7;
+}
+
+#panel {
+	position : absolute;
+	right: 10px;
+	top:  125px;
+/* 	height: 30px; */
+	width: 50px;
+}
+
+#panel div {
+	float: left;
+	margin: 5px;
+}
+</style>
+
+<script type="text/javascript"
+	src="js/supermap/libs/SuperMap.Include.js"></script>
+<!-- NavigationHistory 관련 Script  -->
+<!-- <script type="text/javascript" -->
+<!-- 	src="js/supermap/libs/Button.js"></script> -->
+<!-- <script type="text/javascript" -->
+<!-- 	src="js/supermap/libs/NavigationHistory.js"></script> -->
+<script type="text/javascript" src="js/jquery-1.12.3.js"></script>
+<script type="text/javascript" src="js/bootstrap.js"></script>
+
+<script type="text/javascript">
+	var map, nav, pane, layer, host = document.location.toString().match(/file:\/\//) ? "http://localhost:8090"
+			: 'http://61.32.6.18:8091';
+	url = host + "/iserver/services/map-vWorld_Test/rest/maps/SGG_5186";
+	
+
+	$(document).ready(function() {
+		//Initialize the map
+		map = new SuperMap.Map("map", {
+			controls : [ new SuperMap.Control.Navigation(),
+			             new SuperMap.Control.LayerSwitcher(), 
+						 new SuperMap.Control.Zoom() 
+					   ]
+		});
+		map.addControl(new SuperMap.Control.MousePosition());
+		//Initialize the layer
+				
+		layer = new SuperMap.Layer.TiledDynamicRESTLayer("SIGUNGU", url, {transparent: true, cacheEnabled: true}, {
+				maxResolution : "auto"
+		});
+		//Listen the event that finish loading layer info
+		layer.events.on({
+			"layerInitialized" : addLayer
+		});
+		
+		nav = new SuperMap.Control.NavigationHistory();
+        // parent control must be added to the map
+        map.addControl(nav);
+
+        panel = new SuperMap.Control.Panel(
+            {div: document.getElementById("panel")}
+        );
+        // 이전, 다음 버튼 생성 
+        panel.addControls([ nav.previous,nav.next]);
+        map.addControl(panel);
+
+        //map.zoomToMaxExtent();
+		//Asynchronous loading layer
+		function addLayer() {
+			map.addLayer(layer);
+			//Display the map extent
+			map.setCenter(new SuperMap.LonLat(258234.1067, 420619), 0);
+		}
+	});
+</script>
+</head>
+<body>
+	<div id="map"></div>
+	<div id="panel"></div>
+</body>
+</html>

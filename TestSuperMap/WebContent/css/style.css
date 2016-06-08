@@ -1,0 +1,19 @@
+.smControlNavigationHistory {
+   background-image: url("img/navigation_history.png");
+   background-repeat: no-repeat;
+   width:  24px;
+   height: 24px;
+
+}
+.smControlNavigationHistoryPreviousItemActive { 
+  background-position: 0 0;
+}
+.smControlNavigationHistoryPreviousItemInactive { 
+   background-position: 0 -24px;
+}
+.smControlNavigationHistoryNextItemActive { 
+   background-position: -24px 0;
+}
+.smControlNavigationHistoryNextItemInactive { 
+   background-position: -24px -24px;
+}

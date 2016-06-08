@@ -1,0 +1,51 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>SuperMap iClient for JavaScript:TiledDynamicRESTLayer</title>
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+		<meta charset="utf-8">
+		<style>
+			html, body, #map {
+				height: 100%;
+				margin: 0px;
+				padding: 0px
+			}
+		</style>
+		<!--reference the script-->
+		<script src="./js/SuperMap.Include.js"></script>
+		<script src="./js/VWorldLayer.js"></script>
+		<script type="text/javascript">
+			//declare the variables map, layer, url
+			var map, baseLayer, satelliteLayer, url;
+			var roadLayer;
+			//Create map control
+			function init() {
+				map = new SuperMap.Map("map", {
+					controls : [
+					new SuperMap.Control.LayerSwitcher(), 
+					new SuperMap.Control.ScaleLine(), 
+					new SuperMap.Control.Zoom(), 
+					new SuperMap.Control.Navigation({
+						dragPanOptions : {
+							enableKinetic : true
+						}
+					})]
+				});
+
+				baseLayer = new SuperMap.Layer.VWorldLayer("Base");
+				satelliteLayer = new SuperMap.Layer.VWorldLayer("영상");
+
+				baseLayer.url = ['http://xdworld.vworld.kr:8080/2d/Base/201310/${z}/${x}/${y}.png'];
+				satelliteLayer.url = ['http://xdworld.vworld.kr:8080/2d/Satellite/201301/${z}/${x}/${y}.jpeg'];			
+
+				map.addLayers([baseLayer, satelliteLayer]);
+				map.setCenter(new SuperMap.LonLat(14174150.9795765, 4495339.98139926), 9);
+
+			}
+		</script>
+	</head>
+	<body onload="init()">
+		<!--div of map display-->
+		<div id="map" ></div>
+	</body>
+</html>

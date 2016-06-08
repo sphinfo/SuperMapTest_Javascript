@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html>
+     <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <title>Home</title>
+        <link href='./examples/css/bootstrap.min.css' rel='stylesheet' />
+        <link href='./examples/css/bootstrap-responsive.min.css' rel='stylesheet' />
+         <link href='./examples/css/sm-extend.css' rel='stylesheet' />
+        <link href='./examples/css/sm-doc.css' rel='stylesheet' />
+        <!--[if lte IE 8]>
+        <style>
+        .container .hero-unit{
+                padding: 60px 400px 60px 60px;
+                background-image:url(./examples/images/home_banner2.png);
+                background-repeat:no-repeat;
+                background-position-x:right;
+                background-position-y:bottom;
+            }
+        </style>
+        <![endif]-->
+		<!-- <style>
+			.back2top-icon-real{
+				background:transparent url(a.png) no-repeat fixed bottom right;
+				width:57px;
+				height:57px;
+			}
+		</style> -->
+
+    </head>
+    <body data-spy="scroll" data-target=".subnav" data-offset="50">
+        <!--导航条-->
+        <div class="navbar navbar-fixed-top" id="navbar">
+
+        </div>
+        <br>
+        <div class="container ">
+            <div class="topBanner">
+            <div class="hero-unit ">
+                <h2><font color="#0000FF">SuperMap iClient 7C for JavaScript</font></h2>
+                <br>
+                <p>SuperMap iClient 7C for JavaScript is a GIS client application development package write with JavaScript, it supports multiple source data, multiple terminals and cross platforms.</p>
+                <br>
+                <br>
+				 <a class="btn btn-success" href="./examples/intro.html">For more details, please visit&gt;&gt;</a>        
+            </div>
+            </div>
+                <div class="row-fluid">
+                   
+                    <div>
+                        <h2 class="title" id="details1">Product Compatibility</h2>
+                        <ul>
+                            <li > <strong> (1) Supported service list: </strong> </li>
+                            <ul  class="circle">
+                                <li>SuperMap iServer service
+                                <ul  class="disc">
+                                    <li>Map service </li>
+                                    <li>Data service </li>
+                                    <li>Measurement service</li>
+                                    <li>Query service</li>
+                                    <li>UGC layer service(UGC raster layer, UGC image layer, UGC thematic layer, UGC vector layer)</li>
+                                    <li>Spatial relationship service</li>
+                                    <li>Thematic map service</li>
+                                    <li>Bus transfer service</li>
+                                    <li>Spatial analysis service</li>
+                                    <li>Network analysis service</li>
+                                  </ul>
+                              </li>
+                                  <li>SuperMap cloud service</li>
+                                  <li>OGC standard service (WMS, WFS, WMTS)</li>
+                                  <li>Other third party services, like Tianditu</li>
+                              
+                            </ul>
+                        </ul>
+                        <ul>
+                            <li > <strong> (2) The compatibility with other frameworks </strong> </li>
+                            <ul  class="circle">
+                                <li>jQuery 1.6 +</li>
+                                <li>ExtJS 2.0 +</li>
+                                <li>PhoneGap 1.7.0 +</li>
+                                <li>OpenLayers 2.11, except the subclass of the Geometry class, the Paging class that inherits from the Strategy class and the Filter class</li>
+								<li>proj4js.js</li>
+                            </ul>   
+                        </ul>
+                        <ul>
+                            <li > <strong> (3) The compatibility of terminal equipments and browsers </strong> </li>
+                            <div>
+                            <table width="80%" height="490" class="table table-bordered">
+                                <tr>
+                                    <th width="11%" rowspan="2" style="text-align:center; vertical-align:middle">
+                                        Equipments
+                                    </th>
+                                    <th colspan="6" style="text-align:center; vertical-align:middle">Browser Compatibility
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <td width="12%" > IE</td>
+                                    <td width="14%" style="text-align:center; vertical-align:middle">Chrome</td>
+                                    <td width="14%" style="text-align:center; vertical-align:middle">Firefox</td>
+                                    <td width="14%" style="text-align:center; vertical-align:middle">Opera</td>
+                                    <td width="13%" style="text-align:center; vertical-align:middle">Safari</td>
+                                    <td width="22%" colspan="3">Mobile webkit kernel browser</td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align:center; vertical-align:middle"> PC terminal</td>
+                                    <td style="text-align:center; vertical-align:middle">
+                                    6.0 or higher<br> <font color="#FF0000">(9.0 or higher is recommended)</font></td>
+                                    <td>
+                                        1.0 or higher<br> <font color="#FF0000">(1.0 or higher is recommended)</font></td>
+                                    <td>
+                                  2.0 or higher<br> <font color="#FF0000">(5.0 or higher is recommended)</font></td>
+                                    <td>
+                                    9.5 or higher<br> <font color="#FF0000">(10.0 or higher is recommended)</font></td>
+                                    <td>
+                                  3.0 or higher<br> <font color="#FF0000">(4.0 or higher is recommended)</font></td>
+                                    <td colspan="3">&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <td height="58" style="text-align:center; vertical-align:middle">Android  2.1+ mobile terminal</td>
+                                <td>&nbsp;</td>
+                                  <td>Chrome Lite</td>
+                                    <td>Firefox for Mobile </td>
+                                    <td>Opera Mobile </td>
+                                    <td>&nbsp;</td>
+                                    <td colspan="3" >UC U3 core browser<br> QQ browser 2.0 or higher <br> Dolphin browser 4.0 or higher <br> 360 browser 2.0 or higher <br>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td height="48">iOS  4.0+ Mobile</td>
+                                <td>&nbsp;</td>
+                                    <td>&nbsp;</td>
+                                    <td>&nbsp;</td>
+                                    <td>&nbsp;</td>
+                                    <td >Safari for iOS</td>
+                                    <td colspan="3">UC U3 core browser<br> QQ browser 2.0 or higher <br> Dolphin browser 4.0 or higher <br> 360 browser 2.0 or higher<br>
+                                    </p></td>
+                                  </tr>
+                                   <tr>
+                                    <td height="78">WP 7.5 Mobile</td>
+                                <td>Internet Explorer Mobile<br> (and the QQ browser and UC browser which are based on the IE core)</td>
+                                    <td>&nbsp;</td>
+                                    <td>&nbsp;</td>
+                                    <td>&nbsp;</td>
+                                    <td >&nbsp;</td>
+                                    <td colspan="3">&nbsp;</td>
+                                  </tr>
+                            </table>
+                        </div>  
+                        </ul>
+                        <ul>
+                            <li > <strong> (4) Other compatibility  </strong> </li>
+                            <ul  class="circle">
+                                <li>Supports Windows8 APP store</li>
+                            </ul>
+                        </ul>
+                    </div>
+                    <div>
+					 <h2 class="title" id="details1">Product Update Information</h2>
+                        Current Version: 7.1<br/>
+                        Last Version: 7.1 Beta<br/>
+                        <br/>
+                        <ul>
+                            <li > <strong>1. New Functionalities: </strong></li>
+                            <ul>
+                                <li>(1) New vector map symbol system</li>
+                                <li>(2) New line and region render of space-time data</li>
+                            </ul>
+                            <li><strong>2. API Changes: </strong></li>
+                            <ul>
+                                <li>(1) Layer.TiledVectorLayer adds the useLocalStorage property</li>
+                                <li>(2) Layer.TiledVectorLayer adds the setCatoCSS and getCatoCSS methods</li>
+                            </ul>
+                            <li><strong>3. Product package and performance optimization: </strong></li>
+                            <ul>
+                                <li>(1) Samples directory adjustment</li>
+                                <li>(2) New related reference class of line and region rendering of space-time data</li>
+                                <li>(3) New related reference class of vector map symbol system</li>
+                            </ul>
+                            <li><strong>4. New Examples: </strong></li>
+                            <ul>
+                                <li>(1) New example of subway building</li>
+                                <li>(2) New example of spring festival simulation</li>
+                                <li>(3) New example of symbol system highlight</li>
+                                <li>(4) New CastCSS editing example</li>
+                                <li>(5) New D3 picker example</li>
+                            </ul>
+                            <li><strong>5. Problems Fixed: </strong></li>
+                            <ul>
+                                <li>(1) Fix the problem that the overview does not display when 3857 map switches to 4326 in ie8</li>
+                                <li>(2) Fix problem that a page error shown when TiledDynamicRESTLayer and TiledVectorLayer overlay</li>
+                                <li>(3) The error that vector tile point dataset is not shown is fixed</li>
+                                
+                                <li>(5) Fix the problem that using selectFeature to import multiple layers on chrome and Firefox</li>
+                                <li>(6) Fix the map layer display order in Layer.Elements</li>
+                                <li>(7) kml map can not display</li>
+                                <li>(8) When WMTS Layer overlays with iServer map service, JSON does not contain the attributes data after adding the UTFGrid layer to the layer</li>
+                            </ul>
+                        </ul>
+                    </div>
+					<div>
+                        <h2 class="title" id="details1">Product Update Information</h2>
+                        Current Version: 7.1 Beta<br/>
+                        Last Version: 7.0 SP2<br/>
+                        <br/>
+                        <ul>
+                            <li > <strong>1. New Functionalities:  </strong></li>
+                            <ul>
+                                <li>(1) New space-time data visual</li>
+                                <li>(2) New the node snap function when drawing and editing features</li>
+                                <li>(3) Support the A0 and A1 large scale map printing</li>
+                            </ul>
+                            <li><strong>2. API Changes: </strong></li>
+							<ul>
+								<li>(1) Layer.ClusterLayer adds the event of aggregation finish, and return the point set</li>
+								<li>(2) Layer.Vector adds the client Strategy.GeoText. New Geometry.GeoText object</li>
+							</ul>
+                            <li><strong>3. Product package and performance optimization: </strong></li>
+                            <ul>
+                                <li>(1) The directory structure of examples is adjusted</li>
+                                <li>(2) Add the related reference class of space-time data visual</li>                    
+                            </ul>
+                            <li><strong>4. New Examples: </strong></li>
+                            <ul>
+                                <li>(1) New example that capture the map based on Canvas, and save as a picture</li>
+                                <li>(2) New example of large printing A0 and A1 pages</li>
+                                <li>(3) New train monitoring simulation example based on space-time data</li>
+                                <li>(4) New bus monitoring simulation example based on space-time data</li>
+                            </ul>
+                            <li><strong>5. Problems Fixed: </strong></li>
+                            <ul>
+                                <li>(1) Fix the problem that the Layer.Image image is offset when useCanvas:true</li>
+                                <li>(2) Fix the problem that the error lines is shown when Layer.Vector adds the complex regions</li>
+                                <li>(3) Fix the problem that the map can not zoom in touch ie11</li>
+                                <li>(4) Fix the problem when feature rotates, the label rotates too</li>
+                                <li>(5) Fix the problem that pan the map when the Feature is selectable, the Feature style is changed to original status</li>
+                                <li>(6) Fix the problem that an error thrown when using control LayerSwitcher to switch the map</li>
+                            </ul>
+                        </ul>
+                    </div>
+				    <div>
+						<h2 class="title" id="details1">Product Update Information</h2>
+                        Current Version: 7.0 SP2<br/>
+                        Last Version: 7.0 SP1<br/>
+                        <br/>
+						<ul>
+						    <li > <strong>1. New Functionalities:  </strong></li>
+                            <ul>
+                                <li>(1) New example of butt jointing MapABC</li>
+                            </ul>
+							<li><strong>2. Problems Fixed:  </strong></li>
+                            <ul>
+                                <li>(1) Fix the problem that the SuperMap.Layer.Vector can not draw rectangle object under Canvas and Canvas2</li>
+								<li>(2) Fix the problem that the the map of SuperMap.Layer.Image is offset when useCanvas:true</li>
+								<li>(3) Fix problem that can not print vml in ie8</li>
+                            </ul>
+						</ul>
+					</div>
+                    <div>
+                        <h2 class="title" id="details1">Product Update Information</h2>
+                        Current Version: 7.0 SP1<br/>
+                        Last Version: 7.0<br/>
+                        <br/>
+                        <ul>
+                            <li > <strong>1. New Functionalities:  </strong></li>
+                            <ul>
+                                <li>(1) New EdgeWeight and TurnNodeWeight services</li>
+                                <li>(2) New kml service</li>
+                                <li>(3) New client label thematic map</li>
+                                <li>(4) Support wfs1.1.0</li>
+                                <li>(5) New the method and example of webgl rendering map</li>
+								<li>(6) UTFGridLayer adds the Token management</li>
+								<li>(7) Heat map supports the color linear gradient settings. Add the colors attribute</li>
+                            </ul>
+                            <li><strong>2. API Changes: </strong></li>
+							<ul>
+								<li>(1) Remove the EdgeWeightNames and TurnNodeWeightNames services</li>
+								<li>(2) Remove the attribute nodeDemandField of SuperMap.REST.FindLocationParameters</li>
+								<li>(3) Heat map adds the custom color interface</li>
+								<li>(4) New the SuperMap.Geometry.GeoText class</li>
+								<li>(5) SuperMap.REST.GenerateSpatialDataParameters adds the retainedFields attribute</li>
+							</ul>
+                            <li><strong>3. Product package and performance optimization: </strong></li>
+                            <ul>
+                                <li>(1) New utfgird theme document</li>
+                                <li>(2) New Elements Layer theme document</li>
+                                <li>(3) New heat map theme document</li>
+                                <li>(4) New heat grid map theme document</li>
+                                <li>(6) Add the aggregation theme document</li>
+                                <li>(7) The structure adjustment of theme document</li>
+                                <li>(8) Third-party map service example is changed to iConnector</li>
+                                <li>(9) The mouse adds the hand style</li>
+								<li>(10) Add the GOI theme document</li>
+								<li>(11) The attribute method of Help supports to sort alphabetically</li>
+								<li>(12) New class diagram of UML</li>
+                            </ul>
+                            <li><strong>4. New Examples: </strong></li>
+                            <ul>
+                                <li>(1) New KML example.</li>
+                                <li>(2) New client label thematic map example.</li>
+                                <li>(3) New map rendering example.</li>
+                                <li>(4) New poll example.</li>
+                                <li>(5) New rolling blind example.</li>
+                                <li>(6) New Elements Layer extension example.</li>
+								<li>(7) New example of comparison in four map rendering.</li>
+								<li>(8) New interpolation analysis example.</li>
+                            </ul>
+                            <li><strong>5. Problems Fixed: </strong></li>
+                            <ul>
+                                <li>(1) In chrome, click the view codes. Fix the problem that the browser crashes and there is no scroll bar.</li>
+                                <li>(2) Beautify the control style</li>
+                                <li>(3) SuperMap.Control.SelectFeature supports the event of mouse right-click</li>
+                                <li>(4) The measurepartial event of SuperMap.Control.Measure distinguishes the click and pan</li>
+                                <li>(5) Adopt the filter processing to illegal close feature</li>
+                                <li>(6) In Canvas rendering, set selectStyle attribute of SelectFeature control.</li>
+                                <li>(7) Fix the problem that changing and setting name attribute of Credential is invalid</li>
+                                <li>(8) Fix the problem that the map is blank after zooming the wms layer and resize</li>
+								<li>(9) Fix the problem that the map can't be shown after initializing the overview as minimum.</li>
+								<li>(10) Fix the problem that the GOI does not support custom coordinates and  custom extent</li>
+                            </ul>
+                        </ul>
+                    </div>
+					<div>                        
+                        <h2 class="title" id="details1">Product Update Information</h2>
+                        Current Version: 7.0<br/>
+                        Last Version: 6.1 SP3<br/>
+                         <br/>
+                        <p>This version made a great improvement on the map visualization, which not only provides the rendering solution for massive data, but also adds new rendering ways such as grid map and D3. Besides, the mobile and REST services are being updated continually. It also provides the open-source iConnector with the third-party map. Specific changes as follows:</p> 
+                        <ul>
+                        <li > <strong>1. New Functionalities: </strong></li>
+                            <ul>
+                                <li>(1) New UTFGrid layer</li>
+                                <li>(2) New iConnector, which supports to introduce the iServer map service based on the third-party map API (including Baidu map, Tianditu, Leaflet, Google map and ArcGIS)</li>
+                                <li>(3) New heat grid map layer</li>
+                                <li>(4) New support on the MBTiles generated by iServer</li>
+                                <li>(5) New HTML5 Android project, which reduces the difficulty to develop the JavaScript product</li>
+                                <li>(6) New pit map, which supports the poi display of massive data </li>
+                                <li>(7) New support about route object location on the setting way of route parameter Dataset</li>
+                                <li>(8) New support about buffer analysis on the projection parameter of geometric objects</li>
+                            </ul>
+                    <!-- li><strong>2. 接口变更： </strong></li>
+                            <ul>
+                                <li>(1) 新增HeatGridLayer类</li>
+                                <li>(2) 新增UTFGrid类</li>
+								<li>(3) 新增SelectGrid类</li>
+								<li>(4) 新增UTFGrid类</li>
+                                <li>(5) 新增JSON类</li>
+                            </ul-->
+              <!--li><strong>3. 性能优化： </strong></li -->
+                        <li><strong>2. Product package and performance optimization: </strong></li>
+                            <ul>
+                                <li>(1) Example adjustment which can be copied for reuse</li>
+                                <li>(2) Optimize the rendering way of the Feature object</li>
+								<li>(3) Delete the SpatialAnalystEventArgs class of the SuperMap.REST.SpatialAnalyst namespace</li>
+                            </ul>
+                        <li><strong>3. New Examples: </strong></li>
+                            <ul>
+                                <li>(1) Heat grid map example </li>
+                                <li>(2) UTFGrid example</li>
+								<li>(3) Pit map example</li>
+                            </ul>
+                        <li><strong>4. Problems Fixed:</strong></li>
+                            <ul>
+                                <li>(1) Fix the error message problem when the SQl query only returns the property information</li>
+                                <li>(2) Fix the problem of histest query interface example</li>
+								<li>(3) Fix the problem that the restrictedExtent property of map is invalid</li>
+								<li>(4) Fix the problem that the map has black blocks when you don't use the cache function and select the gif format as the plotting</li>
+                            </ul>
+                        </ul>
+                    </div>
+					<div>                        
+                        <h2 class="title" id="details1">Product Update Information</h2>
+			   		  Current Version:6.1 SP3<br/>
+                        Last Version:6.1 SP2<br/>
+                         <br/>
+                        <p>This version of the product provides various functions, such as map layer, map control, thematic map, query, measurement, spatial analysis, network analysis, dataset query, traffic transfer solution and UGC layer service. Comparing with the previous version, this new version has more functionalities, superior performance, stronger extensibility, and better compatibility. This version mainly has the following improvements and optimization: </p> 
+                        <ul>
+                        <li > <strong>1. New Functionalities: </strong></li>
+                            <ul>
+                                <li>(1) Concurrent access, supports multiple URLS concurrent access of TileDynamicLayer and WMS/WMTS</li>
+                                <li>(2) Third-party map service API, includes Google, ArcGIS, OpenStreetMap, Bing and Baidu map</li>
+                                <li>(3) Cluster layer and Heat featured layer</li>
+                                <li>(4) Grid unique values thematic map and grid ranges thematic map with richer display effect</li>
+                                <li>(5) Interpolation analysis service, supports IDW/RBF/Density/Kriging</li>
+                                <li>(6) Bezier curve, B-spline, various Gemetry types</li>
+                                <li>(7) WCS and WFS protocol support</li>
+                                <li>(8) Chart query and marker library</li>
+                                <li>(9) Support 2G/3G/4G symbol </li>
+                                <li>(10) MBTile offline data, IE10 and WinRT supported by Android SDK</li>
+                                <li>(11) Support Permalink control used in view sharing</li>
+                                <li>(12) zoom control</li>
+                                <li>(13) Map zoom to any scale</li>
+                                <li>(14) Easing out tile display effect </li>
+								<li>(15) Credential functionality</li>
+                            </ul>
+                    <li><strong>2. Interface Update: </strong></li>
+                            <ul>
+                                <li>(1) The projection supports EPSG:900913, EPSG:3857 and EPSG:4326, which only need to be set up on the projection: "EPSG:***", but not maxExtent, units, etc</li>
+                                <li>(2) Partial methods can join in the parameter judgement. When the parameter is invalid, it will throw an TypeError exception to the console</li>
+								<li>(3) Tianditu interface update</li>
+                            </ul>
+              <!--li><strong>3. 性能优化: </strong></li-->
+                        <li><strong>3. Product package and performance optimization:</strong></li>
+                            <ul>
+                                <li>(1) Integrate Proj4as library into the product package</li>
+                                <li>(2) Delete all the files under the Rico folder</li>
+                            </ul>
+                        <li><strong>4. New Sample: </strong></li>
+                            <ul>
+                                <li>(1) Heat map sample</li>
+                                <li>(2) Map projection transformation sample</li>
+                                <li>(3) WCS layer sample</li>
+                                <li>(4) Google layer sample</li>
+                                <li>(5) Bing layer sample</li>
+                                <li>(6) ArcGIS layer sample</li>
+                                <li>(7) OpenStreetMap layer sample</li>
+                                <li>(8) Baidu map layer sample</li>
+                                <li>(9) Grid ranges thematic map sample</li>
+                                <li>(10) Grid unique values thematic map sample</li>
+                                <li>(11) WFS query sample</li>
+                                <li>(12) Field query statistics sample</li>
+                                <li>(13) Cluster points layer sample</li>
+                                <li>(14) Map print sample</li>
+								<li>(15) Sublayer control sample</li>
+								<li>(16) Token sample</li>
+                            </ul>
+                        <li><strong>5. Problems Fixed: </strong></li>
+                            <ul>
+                                <li>(1) Fixed the display problem of the hole polygon</li>
+                                <li>(2) Fixed the problem that is not able to click the layer at the corner of Popup.FramedCloud</li>
+								<li>(3) Fixed the eagle eye problem of Tianditu</li>
+                            </ul>
+                        </ul>
+                    </div>
+					<div>
+                        <h2 class="title" id="details1">Product Update Information</h2>
+                        Current version: 6.1 SP1<br/> the last version: 6.1.0 <br> <br>
+                        <p>This version has more functionalities, better performance, extensibility and compatibility:</p> 
+                        <ul>
+                        <li > <strong>1. New Functionalities </strong></li>
+                            <ul>
+                                <li>(1) Dynamic segmentation service, supported in SuperMap iServer 6.1.2 or higher versions.</li>
+                                <li>(2) Data service, provide ID query, geometry query, buffer query, SQL query, feature editing, etc.</li>
+                                <li>(3) Canvas2 rendering method, used for the rendering for vector data animation. </li>
+                                <li>(4) Offline store and visiting functionalities, support the Web application developed based on PhoneGap.</li>
+                                <li>(5) Traffic transfer service, supported in SuperMap iServer 6.1.2 or higher versions.</li>
+                                <li>(6) UGC layer service, including UGC raster layer, UGC vecor layer, UGC image layer, UGC thematic layer </li>
+                                <li>(7) Spatial relationship analysis service, supported in SuperMap iServer 6.1.2 or higher versions.</li>
+                            </ul>
+                    <li><strong>2. Interface Update: </strong></li>
+                            <ul>
+                                <li>(1) The CanvasLayer class has a dpi property</li>
+                                <li>(2) Three properties of the SampleCacheLayer class: viewBounds, viewer and format, are deleted</li>
+                                <li>(3) The CloudLayer class has a url property</li>
+                                <li>(4) The PathGuideItem class has two new propertes: geometry and description</li>
+                                <li>(5) The attributes property of SuperMap.Feature.Vector is changed to key-value pair form.</li>
+                                <li>(6) SuperMap.Control.PanZoomBar  has a new showSlider property</li>
+                                <li>(7) SuperMap.Control.PanZoomBar  has a new showSlider property</li>
+                                <li>(8) SuperMap.Layer.TiledDynamicRESTLayer has two new properties: dpi and projection, meanwhile, three properties are deleted: viewBounds, viewer and scale, the maxVisibleVertex parameter set on url is also deleted.</li>
+                                <li>(9) The Ajax class is deleted</li>
+                                <li>(10) SuperMap.REST.ThemeParameters has two properties: displayFilter and displayOrderBy</li>
+                                <li>(11) SuperMap.REST.TransportationAnalystParameter has a new property: barrierPoints</li>
+                            </ul>
+              <li><strong>3. Performance Optimization </strong></li>
+                            <ul>
+                                <li>(1) Animation zoom and panning optimization</li>
+                                <li>(2) Tile advance gradually effect optimization</li>
+                                <li>(3) Multiple layer overlay performance optimization</li>
+                                <li>(4) Animation refactoring and plug-in</li>
+                            </ul>
+                        <li><strong>4. The Product Package </strong></li>
+                            <ul>
+                                <li>(1) Namespace is unified as SuperMap</li>
+                                <li>(2) Core library compressed, less library file</li>
+                                <li>(3) New product interface</li>
+                                <li>(4) Document localization</li>
+                                <li>(4) The adjustment of controls and their style, deleted controls includes: Pan, PanPanel, ZoomIn, ZoomOut, ZoomPanel and ZoomToMavExtent, PanZoom is merged in to PanZoomBar, and PanZoomBar is optimized</li>
+                            </ul>
+                        <li><strong>5. New Sample: </strong></li>
+                            <ul>
+                                <li>(1) Dynamic segmentation</li>
+                                <li>(2) Dataset buffer query</li>
+                                <li>(3) Dataset SQL query</li>
+                                <li>(4) Dataset geometry query</li>
+                                <li>(5) Dataset ID query</li>
+                                <li>(6) High performance vector layer rendering -  Vehicle monitoring system sample, it can be run on browsers that support HTML5 Canvas</li>
+                                <li>(7) High performance vector layer rendering - Big data vector feature query and interaction sample, it can be run on browsers that support HTML5 Canvas</li>
+                                <li>(8) High performance vector layer rendering -  Weather monitoring system sample, it can be run on browsers that support HTML5 Canvas</li>
+                                <li>(9) WMTS layer sample</li>
+                                <li>(10) Traffic transfer sample</li>
+                            </ul>
+                        <li><strong>6. Problems Fixed: </strong></li>
+                            <ul>
+                                <li>(1) PanZoomBar display error after set fixed scale in the map control</li>
+                                <li>(2) WMTS layer output</li>
+                                <li>(3) Updating Tianditu image address</li>
+                                <li>(4) Get scale with map error </li>
+                                <li>(5) Multiple point measurement and cross-domain measurement </li>
+                                <li>(6) The output problem after load 4.0 + cache</li>
+                            </ul>
+                        </ul>
+                    </div>
+                </div>
+               
+            
+            <hr>
+            <div class='footer'>
+            <p>Copyright&nbsp;&copy; 2000-2015 SuperMap Software Co., Ltd.</p>
+        </div>
+		
+		<!-- <div style="bottom: 1%; margin-right:0; width: 57px; height: 57px; overflow: hidden; cursor: pointer; left: 50%; -webkit-transition: opacity; position: fixed; opacity: 0.6; display: block; " id="qBack2topBtn">
+			<div class="back2top-icon-real"></div> 
+		</div> -->
+        </div>
+        
+        <script src='./examples/js/jquery.js'></script>
+        <script src='./examples/js/bootstrap.js'></script>
+        <script>
+			window.onstop = function(){
+				alert(1);
+			}
+		</script>
+        <script src="examples/js/navbar.js"></script>
+    </body>
+</html>
