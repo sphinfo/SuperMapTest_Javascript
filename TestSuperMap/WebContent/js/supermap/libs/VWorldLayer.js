@@ -69,7 +69,7 @@ SuperMap.Layer.VWorldLayer = SuperMap.Class(SuperMap.CanvasLayer, {
 		                  2256.994353
 		                 ] ;
         options = SuperMap.Util.extend({
-            projection: "EPSG:900913",
+            projection: "EPSG:3857",
             //minZoom : 7
             resolutions :resolutionsArr,
             scales : scalesArr
