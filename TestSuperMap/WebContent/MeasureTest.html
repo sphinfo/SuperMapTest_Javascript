@@ -8,18 +8,21 @@
 <link href="css/bootstrap.css" rel="stylesheet">
 <link href="css/style.css" rel="stylesheet">
 <style type="text/css">
-body {
+html,body {
 	margin: 0;
 	overflow: hidden;
 	background: #fff;
+	height: 100%;
+	width : 100%;
 }
 div {
-margin : 0;
-padding : 0;
+	margin : 0;
+	padding : 0;
 }
 #map {
 	position: relative;
-	height: 553px;
+	height: 100%;
+	width : 100%;
 	border: 1px solid #3473b7;
 }
 
@@ -36,67 +39,9 @@ padding : 0;
 	margin: 5px;
 }
 
-.smPopupContent {
-    overflow: hidden !important;
-    z-index : 19999 ;
-}
-
-/* 거리, 면적 측정 Style */
-div.smControlMeasurePopup {
-	text-align:center;
-	padding : 3px;
-	vertical-align: middle;
-	border: none;
-	background: #ffffff;
-	color: #000000;
-	font:12px 굴림;
-	overflow : hidden;
-	height:20px;
-}
-
-/* 이동 팝업 내부 내용 창 */
-div.smControlMeasureContent {
-	vertical-align: middle;
-	border: none;
-	background: rgba(255, 255, 255, 0.5);
-	color: #000000;
-	font:12px 굴림;
-	overflow : hidden;
-	width:150px;
-}
-
-div.measureClose {
-	position : absolute;
-	top:3px;
-	right:3px;
-}
-
-/* 팝업 내부 글자 색 (빨간색) */
-span.MeasureColorRed {
-	color: #000000;
-}
-
-/* 시작 창 */
-div.smControlMeasurePopupStart {
-	width:36px;
-}
-
-/* 총 거리 */
-div.smControlMeasureContent div.MeasureAllDist {
-	font:12px 굴림;
-}
-div.smControlMeasureContent span.measureResTit {
-	display : inline-block;
-	width:50px;
-}
-div.smControlMeasureContent span.measureResCon {
-	color:#000000;
-	font:12px 굴림;
-} 
-
 </style>
 <script type="text/javascript"
-	src="js/supermap/libs/proj4js/proj4js-compressed.js"></script>
+	src="js/supermap/libs/proj4js/proj4js-combined.js"></script>
 <script type="text/javascript"
 	src="js/supermap/libs/SuperMap.Include.js"></script>
 <script type="text/javascript"
@@ -107,10 +52,11 @@ div.smControlMeasureContent span.measureResCon {
 <script type="text/javascript" src="js/bootstrap.js"></script>
 
 <script type="text/javascript">
-var map, nav,baseLayer,satelliteLayer, CTPRVNLayer, pane,popwin,
+var map, nav,baseLayer,satelliteLayer, CTPRVNLayer, pane,popwin,vectorLayer,selectFeature ,
 	host = document.location.toString().match(/file:\/\//) ? "http://61.32.6.18:8091"
 		: 'http://61.32.6.18:8091';
 var url = host+"/iserver/services/map-vWorld_Test/rest/maps/SGG_5186";
+
 
 //거리, 면적 측정 스타일
 var measureStyleMap = new SuperMap.StyleMap({
@@ -142,7 +88,24 @@ var measureStyleMap = new SuperMap.StyleMap({
 		})]
 	})
 });
-
+var style1 = {
+	strokeColor: "#ffffff",
+	strokeWidth: 1,
+	fillColor: "#304DBE",
+	fillOpacity: "0.8"
+};
+var style2 = {
+	strokeColor: "#ffffff",
+	strokeWidth: 1,
+	fillColor: "#EC11ED",
+	fillOpacity: "0.8"
+}
+var selectStyle  = {
+	strokeColor: "#cde122",
+	strokeWidth: 1,
+	fillColor: "#ecda11",
+	fillOpacity: "0.8"
+}
 var squareUnits = "SQUARE"
 $(document).ready(function() {
 
@@ -150,7 +113,7 @@ $(document).ready(function() {
 	map = new SuperMap.Map("map", {
 		units:"m",
 		//displayProjection:new SuperMap.Projection("EPSG:4326"),
-		displayProjection:'EPSG:900913',
+		projection:'EPSG:5186',
 		maxExtent: new SuperMap.Bounds(13871489.33 , 3910407.08, 14680019.87,  4666488.83),
 		controls : [
 					new SuperMap.Control.LayerSwitcher(), 
@@ -197,7 +160,11 @@ $(document).ready(function() {
 			        }),
 					new SuperMap.Control.Zoom() ,
 					new SuperMap.Control.Navigation({
-						id:"pan"
+						id:"pan",
+	                    dragPanOptions: {
+	                    	documentDrag:true,
+	                        enableKinetic: true
+	                    }
 					})
 				]
 		
@@ -207,19 +174,78 @@ $(document).ready(function() {
 	baseLayer = new SuperMap.Layer.VWorldLayer("Base");
 	satelliteLayer = new SuperMap.Layer.VWorldLayer("영상");
 
-	baseLayer.url = ['http://xdworld.vworld.kr:8080/2d/Base/201310/${z}/${x}/${y}.png'];
+	baseLayer.url = ['http://xdworld.vworld.kr:8080/2d/Base/201512/${z}/${x}/${y}.png'];
 	satelliteLayer.url = ['http://xdworld.vworld.kr:8080/2d/Satellite/201301/${z}/${x}/${y}.jpeg'];		
-	
+	satelliteLayer.bufferImgCount = 100;
 	CTPRVNLayer = new SuperMap.Layer.TiledDynamicRESTLayer("시군구", url, {transparent: true, cacheEnabled: true}, {
 		projection:'EPSG:3857',
 		maxResolution : "auto",
 		isBaseLayer :false
 	});
+	var callbacks = {
+		over: function(currentFeature){
+	    	//todo
+	    	console.log(" over: ");
+	    	console.log(currentFeature);
+	    },
+	    out: function(currentFeature){
+	    	//todo
+	    	console.log(" out: ");
+	    	console.log(currentFeature);
+	    },
+	    click: function(currentFeature){
+	    	//todo
+	    	console.log(" click: ");
+	    	console.log(currentFeature);
+	    },
+	    clickout: function(lastFeature){
+	    	//todo
+	    	console.log(" clickout: ");
+	    	console.log(lastFeature);
+	    },
+	    rightclick:function(currentFeature){
+	    	//todo
+	    	console.log(" rightclick:function: ");
+	    	console.log(currentFeature);
+	    },
+	    dblclick: function(currentFeature){
+	    	//todo
+	    	console.log(" dblclick: ");
+	    	console.log(currentFeature);
+	    }
+	};
+
+
+	vectorLayer = new SuperMap.Layer.Vector("Vector Layer", {
+	    isBaseLayer: false,
+	    style : style1
+	});
+	
+	selectFeature = new SuperMap.Control.SelectFeature(vectorLayer, {
+	    onSelect: function(currentFeature){
+	    	console.log(" onSelect: ");
+	    	console.log(currentFeature);
+	    },
+	    onUnselect: function(currentFeature){
+	    	console.log(" onUnselect: ");
+	    	console.log(currentFeature);
+	    },
+	    toggle : true ,
+	    callbacks: callbacks,
+	    hover: false,
+	    //repeat :true,
+	    ///clickout :true,
+	    selectStyle : selectStyle
+	});
+	//Add control to map
+	map.addControl(selectFeature);
+	//Activate the control
+	selectFeature.activate();
+	
+	
 	CTPRVNLayer.events.on({
 		"layerInitialized" : addLayer
 	});
-	
-	markers = new SuperMap.Layer.Markers("Markers");
 	
 	// 지도 이동 
 	$("#btnMove").on("click",function(){
@@ -253,6 +279,7 @@ $(document).ready(function() {
 
 		var lonLat = map.getCenter();
 		var anchor = {'size': new SuperMap.Size(0,0), 'offset': new SuperMap.Pixel(0, 0)};
+		if(popwin) map.removePopup(popwin);
 		popwin = new SuperMap.Popup.Anchored(
 			"chicken",
 			lonLat,
@@ -261,16 +288,71 @@ $(document).ready(function() {
 			anchor,
 			false,null
 		);
-		if(popwin) map.removePopup(popwin);
+		var point = new SuperMap.Geometry.Point(lonLat.lon, lonLat.lat);
+		var feature = new SuperMap.Feature.Vector(point,null, style1);
+		vectorLayer.addFeatures(feature);
 		map.addPopup(popwin);
 	});
 	
 	//Asynchronous loading layer
 	function addLayer() {
 		//map.addLayer(layer);
-		map.addLayers([baseLayer, satelliteLayer,CTPRVNLayer]);
+		map.addLayers([baseLayer, satelliteLayer,CTPRVNLayer,vectorLayer]);
 		map.setCenter(new SuperMap.LonLat(14174150.9795765, 4495339.98139926), 0);
 		
+	}
+	queryBySQL();
+	function queryBySQL() {
+		vectorLayer.removeAllFeatures();
+
+		var queryParam, queryBySQLParams, queryBySQLService;
+		queryParam = new SuperMap.REST.FilterParameter({
+			name: "TB_FGDI_LP_AA_SGG@sgg",
+			attributeFilter: "CTPRV_CD=11"
+		});
+		queryBySQLParams = new SuperMap.REST.QueryBySQLParameters({
+			queryParams: [queryParam]
+		});
+		queryBySQLService = new SuperMap.REST.QueryBySQLService(url, {
+		eventListeners: {"processCompleted": processCompleted, "processFailed": processFailed}});
+		queryBySQLService.processAsync(queryBySQLParams);
+	}
+	function processCompleted(queryEventArgs) {
+		var i, j, feature, 
+		result = queryEventArgs.result;
+
+		if (result && result.recordsets) {
+			for (i=0; i<result.recordsets.length; i++) {
+				if (result.recordsets[i].features) {
+					for (j=0; j<result.recordsets[i].features.length; j++) {
+						feature = result.recordsets[i].features[j];
+						var path = [];
+						var geometry = feature.geometry.transform(
+					    	new SuperMap.Projection('EPSG:5186'), 
+					        new SuperMap.Projection('EPSG:900913')
+					    );
+						var linearRings = new SuperMap.Geometry.LinearRing(path);
+						var region = new SuperMap.Geometry.Polygon([linearRings]);
+						if(j%2==0){
+							var transformedFeature = new SuperMap.Feature.Vector(geometry, feature.data, style1);
+							vectorLayer.addFeatures(transformedFeature);
+						}else {
+							var transformedFeature = new SuperMap.Feature.Vector(geometry, feature.data, style2);
+							vectorLayer.addFeatures(transformedFeature);
+						}
+ 						
+					}
+				}
+			}
+		}
+	}
+	function processFailed(e) {
+		alert(e.error.errorMsg);
+	}
+	function clearFeatures() {
+		//Remove the previous display result
+		vectorLayer.removeAllFeatures();
+		vectorLayer.refresh();
 	}
 });
 

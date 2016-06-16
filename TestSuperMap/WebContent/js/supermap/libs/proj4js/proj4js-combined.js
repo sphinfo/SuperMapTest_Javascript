@@ -660,7 +660,9 @@ Proj4js.Proj = Proj4js.Class({
         this.initTransforms();
         return;
       }
-
+      if(projName == null){
+    	  return;
+      }
       //the URL for the projection code
       var url = Proj4js.getScriptLocation() + 'projCode/' + projName + '.js';
       Proj4js.loadScript(url, 
@@ -675,6 +677,7 @@ Proj4js.Proj = Proj4js.Class({
  *
  */
     loadProjCodeSuccess: function(projName) {
+      
       if (Proj4js.Proj[projName].dependsOn){
         this.loadProjCode(Proj4js.Proj[projName].dependsOn);
       } else {
