@@ -17,3 +17,90 @@
 .smControlNavigationHistoryNextItemInactive { 
    background-position: -24px -24px;
 }
+
+
+.smPopupContent {
+    overflow: hidden !important;
+    z-index : 19999 ;
+}
+
+/* 거리, 면적 측정 Style */
+div.smControlMeasurePopup {
+	text-align:center;
+	padding : 3px;
+	vertical-align: middle;
+	border: none;
+	background: #ffffff;
+	color: #000000;
+	font:12px 굴림;
+	overflow : hidden;
+	height:20px;
+}
+
+/* 이동 팝업 내부 내용 창 */
+div.smControlMeasureContent {
+	vertical-align: middle;
+	border: none;
+	background: rgba(255, 255, 255, 0.5);
+	color: #000000;
+	font:12px 굴림;
+	overflow : hidden;
+	width:150px;
+}
+
+div.measureClose {
+	position : absolute;
+	top:3px;
+	right:3px;
+}
+
+/* 팝업 내부 글자 색 (빨간색) */
+span.MeasureColorRed {
+	color: #000000;
+}
+
+/* 시작 창 */
+div.smControlMeasurePopupStart {
+	width:36px;
+}
+
+/* 총 거리 */
+div.smControlMeasureContent div.MeasureAllDist {
+	font:12px 굴림;
+}
+div.smControlMeasureContent span.measureResTit {
+	display : inline-block;
+	width:50px;
+}
+div.smControlMeasureContent span.measureResCon {
+	color:#000000;
+	font:12px 굴림;
+}
+
+div#drawPanel{
+	position: absolute;
+	right: 43px; 
+	bottom: -20px; 
+	width: 100px;
+	padding: 5px;
+    background: #fff;
+    text-align: center;
+    border: solid 1px #2b5057;
+    display: none;
+}
+.ui-buttonset .ui-button {
+	font:10px 굴림;
+}
+.subrow {
+	border-bottom: solid 1px orange;
+	padding: 5px;
+	font:11px 굴림;
+}
+.subLastRow {
+	padding: 5px;
+	font:11px 굴림;
+}
+.mainRow {
+	border : solid 1px orange;
+	font:12px 굴림;
+}

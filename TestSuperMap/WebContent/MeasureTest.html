@@ -50,8 +50,16 @@ div {
 	src="js/supermap/libs/MeasureCustom.js"></script>
 <script type="text/javascript" src="js/jquery-1.12.3.js"></script>
 <script type="text/javascript" src="js/bootstrap.js"></script>
+<!--[if lte IE 8]>
+	<script type="text/javascript" src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<script type="text/javascript" src="js/supermap/libs/excanvas.js"></script>
+<![endif]-->
 
+<script type="text/javascript" src="js/supermap/libs/html2canvas.js"></script>
+<script type="text/javascript" src="js/supermap/libs/canvas2image.js"></script>
+<script type="text/javascript" src="js/supermap/libs/MapToImae.js"></script>
 <script type="text/javascript">
+var console = window.console || { log: function() {} };
 var map, nav,baseLayer,satelliteLayer, CTPRVNLayer, pane,popwin,vectorLayer,selectFeature ,
 	host = document.location.toString().match(/file:\/\//) ? "http://61.32.6.18:8091"
 		: 'http://61.32.6.18:8091';
@@ -109,7 +117,6 @@ var selectStyle  = {
 var squareUnits = "SQUARE"
 $(document).ready(function() {
 
-	
 	map = new SuperMap.Map("map", {
 		units:"m",
 		//displayProjection:new SuperMap.Projection("EPSG:4326"),
@@ -220,27 +227,29 @@ $(document).ready(function() {
 	    isBaseLayer: false,
 	    style : style1
 	});
-	
-	selectFeature = new SuperMap.Control.SelectFeature(vectorLayer, {
-	    onSelect: function(currentFeature){
-	    	console.log(" onSelect: ");
-	    	console.log(currentFeature);
-	    },
-	    onUnselect: function(currentFeature){
-	    	console.log(" onUnselect: ");
-	    	console.log(currentFeature);
-	    },
-	    toggle : true ,
-	    callbacks: callbacks,
-	    hover: false,
-	    //repeat :true,
-	    ///clickout :true,
-	    selectStyle : selectStyle
-	});
-	//Add control to map
-	map.addControl(selectFeature);
-	//Activate the control
-	selectFeature.activate();
+	vectorLayer.events.on({"click":function(e){
+		console.log(e);
+	}});
+// 	selectFeature = new SuperMap.Control.SelectFeature(vectorLayer, {
+// 	    onSelect: function(currentFeature){
+// 	    	console.log(" onSelect: ");
+// 	    	console.log(currentFeature);
+// 	    },
+// 	    onUnselect: function(currentFeature){
+// 	    	console.log(" onUnselect: ");
+// 	    	console.log(currentFeature);
+// 	    },
+// 	    toggle : true ,
+// 	    //callbacks: callbacks,
+// 	    hover: false,
+// 	    //repeat :true,
+// 	    ///clickout :true,
+// 	    selectStyle : selectStyle
+// 	});
+// 	//Add control to map
+// 	map.addControl(selectFeature);
+// 	//Activate the control
+// 	selectFeature.activate();
 	
 	
 	CTPRVNLayer.events.on({
@@ -259,7 +268,8 @@ $(document).ready(function() {
 	
 	// 면적 측정
 	$("#btnArea").on("click",function(){
-		smActiveControl("area");
+		//smActiveControl("area");
+		map.getControl("area").activate();
 	});
 	
 	// 거리, 면적 측정 값 초기화 및 팝업 제거 
@@ -269,6 +279,18 @@ $(document).ready(function() {
 		if(popwin) map.removePopup(popwin);
 		smActiveControl("pan");
 		//areaMeasure();
+	});
+	$("#btnCapture").on("click",function(){
+		//MapToImg&&MapToImg.excute(map);
+	     html2canvas(document.body, {
+		     onrendered: function(canvas) {
+		     	//console.log(canvas.toDataURL());
+		     	//Canvas2Image.saveAsPNG(canvas);
+		     	//document.location.href= canvas.toDataURL();
+		         //document.body.appendChild(canvas);
+		         Canvas2Image.saveAsPNG(canvas);
+		     }
+	     });
 	});
 	
 	// Anchored 팝업 offset 설정 (REQ-0006)
@@ -366,6 +388,7 @@ $(document).ready(function() {
 		<a id="btnArea" class="btn btn-info btn-xs">면적</a>
 		<a id="btnTrash" class="btn btn-info btn-xs">삭제</a>
 		<a id="btnPopup" class="btn btn-info btn-xs">팝업</a>
+		<a id="btnCapture" class="btn btn-info btn-xs">캡쳐</a>
 	</div>
 </body>
 </html>

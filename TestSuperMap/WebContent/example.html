@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Insert title here</title>
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/jquery-ui.css" rel="stylesheet">
+<link href="css/jquery-ui.structure.css" rel="stylesheet">
+<link href="css/jquery-ui.theme.css" rel="stylesheet">
+<link href="css/spectrum.css" rel="stylesheet">
+<link href="css/style.css" rel="stylesheet">
+<style type="text/css">
+html,body {
+	margin: 0;
+	overflow: hidden;
+	background: #fff;
+	height: 100%;
+	width : 100%;
+}
+div {
+	margin : 0;
+	padding : 0;
+}
+#map {
+	position: relative;
+	height: 100%;
+	width : 100%;
+	border: 1px solid #3473b7;
+}
+
+#panel {
+	position : absolute;
+	right: 10px;
+	top:  125px;
+/* 	height: 30px; */
+	width: 50px;
+}
+
+#panel div {
+	float: left;
+	margin: 5px;
+}
+#baseMapPanel {
+	position : absolute;
+	right: 50%;
+	top:  5px;
+/* 	height: 30px; */
+	width: 72px;
+}
+</style>
+<script type="text/javascript"
+	src="js/supermap/libs/proj4js/proj4js-combined.js"></script>
+<script type="text/javascript"
+	src="js/supermap/libs/SuperMap.Include.js"></script>
+<script type="text/javascript"
+	src="js/supermap/libs/VWorldLayer.js"></script>
+<script type="text/javascript"
+	src="js/supermap/libs/MeasureCustom.js"></script>
+<script type="text/javascript" src="js/jquery-1.12.3.js"></script>
+<script type="text/javascript" src="js/bootstrap.js"></script>
+<script type="text/javascript" src="js/jquery-ui.js"></script>
+<!--[if lte IE 9]>
+	<script type="text/javascript" src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<script type="text/javascript" src="js/supermap/libs/excanvas.js"></script>
+<![endif]-->
+
+<script type="text/javascript" src="js/supermap/libs/html2canvas.js"></script>
+<!-- <script type="text/javascript" src="js/supermap/libs/canvas2image.js"></script> -->
+<script type="text/javascript" src="js/supermap/libs/MapToImae.js"></script>
+<script type="text/javascript" src="js/spectrum.js"></script>
+<script type="text/javascript" src="js/SuperMapInit.js"></script>
+
+
+<script type="text/javascript">
+//IE8이하 console 처리
+var console = window.console || { log: function() {} };
+var map;
+// base layer 선언
+var baseLayer,satelliteLayer,hybridLayer;
+// layer 선언
+var CTPRVNLayer,vectorLayer,drawLayer;
+// controller 선언
+var nav,pane,popwin,selectFeature,modifyFeature;
+var host = document.location.toString().match(/file:\/\//) ? "http://61.32.6.18:8091"
+		: 'http://61.32.6.18:8091';
+var url = host+"/iserver/services/map-vWorld_Test/rest/maps/SGG_5186";
+
+//거리, 면적 측정 스타일
+var measureStyleMap = new SuperMap.StyleMap({
+	'default': new SuperMap.Style(null, {
+		rules: [new SuperMap.Rule({
+			symbolizer : {
+				"Point": {
+					pointRadius: 4,
+					graphicName: "square",
+					fillColor: "#ffffff",
+					fillOpacity: 1,
+					strokeWidth: 1,
+					strokeOpacity: 1,
+					strokeColor: "#ff0000"
+				},
+				"Line": {
+					strokeWidth: 3,
+					strokeOpacity: 0.7,
+					strokeColor: "#ff0000"
+				},
+				"Polygon": {
+					strokeWidth: 3,
+					strokeOpacity: 0.7,
+					strokeColor: "#ff0000",
+					fillColor: "#ff0000",
+					fillOpacity: 0.3
+				}
+			}
+		})]
+	})
+});
+//거리, 면적 측정 스타일
+var measureStyleMap = new SuperMap.StyleMap({
+	'default': new SuperMap.Style(null, {
+		rules: [new SuperMap.Rule({
+			symbolizer : {
+				"Point": {
+					pointRadius: 4,
+					graphicName: "square",
+					fillColor: "#ffffff",
+					fillOpacity: 1,
+					strokeWidth: 1,
+					strokeOpacity: 1,
+					strokeColor: "#ff0000"
+				},
+				"Line": {
+					strokeWidth: 3,
+					strokeOpacity: 0.7,
+					strokeColor: "#ff0000"
+				},
+				"Polygon": {
+					strokeWidth: 3,
+					strokeOpacity: 0.7,
+					strokeColor: "#ff0000",
+					fillColor: "#ff0000",
+					fillOpacity: 0.3
+				}
+			}
+		})]
+	}),
+	"select":{
+        fill:false,
+        stroke:false,
+        graphicZIndex:2
+	}
+});
+
+var drawStyleMap = new SuperMap.StyleMap({
+	'default': new SuperMap.Style(null, {
+		rules: [new SuperMap.Rule({
+			symbolizer : {
+				"Point": {
+					pointRadius: 4,
+					graphicName: "square",
+					fillColor: "#304DBE",
+					fillOpacity: 1,
+					strokeWidth: 1,
+					strokeOpacity: 1,
+					strokeColor: "#ffffff"
+				},
+				"Line": {
+					strokeWidth: 3,
+					strokeOpacity: 1,
+					strokeColor: "#ffffff",
+					strokeDashstyle: "solid",
+				},
+				"Polygon": {
+					strokeWidth: 3,
+					strokeOpacity: 1,
+					strokeColor: "#ffffff",
+					strokeDashstyle: "solid",
+					fillColor: "#304DBE",
+					fillOpacity: 0.8
+				}
+			}
+		})]
+	}),
+	"select":{
+        fill:false,
+        stroke:false,
+        graphicZIndex:2
+	}
+});
+
+var drawFillStyle = {
+	strokeWidth: 3,
+	strokeOpacity: 1,
+	strokeColor: "#ffffff",
+	strokeDashstyle: "solid",
+	fillColor: "#304DBE",
+	fillOpacity: 0.8
+};
+var drawLineStyle = {
+	strokeWidth: 3,
+	strokeOpacity: 1,
+	strokeColor: "#ffffff",
+	strokeDashstyle: "solid",
+};	
+var style1 = {
+	strokeWidth: 3,
+	strokeOpacity: 1,
+	strokeColor: "#ffffff",
+	strokeDashstyle: "solid",
+	fillColor: "#304DBE",
+	fillOpacity: 0.8
+};
+var style2 = {
+	strokeColor: "#ffffff",
+	strokeWidth: 3,
+	fillColor: "#EC11ED",
+	fillOpacity: "0.8"
+};
+var selectStyle  = {
+	strokeColor: "#cde122",
+	strokeWidth: 1,
+	fillColor: "#ecda11",
+	fillOpacity: "0.8"
+};
+var squareUnits = "SQUARE";
+
+$(document).ready(function() {
+	superMapInit.init();
+	// 도형 설정 팝업 설정
+	$("#drowSettingPopup").dialog({
+		autoOpen: false,
+		resizable: false,
+		width : 400,
+		height : 300,
+		buttons : [
+			{
+				text : "적용",
+				click : function(){
+					var lineType = $("#storkeType input[name=line]:checked").val();
+					var feature = drawLayer.selectedFeatures[0];
+					var changeStyle = {};
+					
+					changeStyle.strokeWidth = $("#lineWeight").val();
+					changeStyle.strokeOpacity = $("#lineOpacity").val();
+					changeStyle.strokeColor = $("#lineColor").spectrum("get").toHexString();
+					changeStyle.strokeDashstyle = lineType;
+					if(feature.geotype=="polygon"){
+						changeStyle.fillColor = $("#fillColor").spectrum("get").toHexString();
+						changeStyle.fillOpacity = $("#fillOpacity").val();
+					}
+					feature.style = changeStyle;
+					drawLayer.redraw();
+					$(this).dialog("close");
+				}
+			},{
+				text : "닫기",
+				click : function(){
+					$(this).dialog("close");
+				}
+			}
+			
+		],
+		open : function(){
+			var feature = drawLayer.selectedFeatures[0];
+			var style = feature.style;
+			
+			$("#lineColor").spectrum({color : style.strokeColor});
+			$("#lineWeight").val(style.strokeWidth);
+			$("#lineOpacity").val(style.strokeOpacity);
+			var lineType = "#storkeType input[value="+style.strokeDashstyle+"]";
+			$(lineType).prop("checked",true).button( "refresh" );
+			
+			if(feature.geotype=="polygon"){
+				$("#fillSettingBox").show();
+				$("#fillColor").spectrum({color : style.fillColor});
+				$("#fillOpacity").val(style.fillOpacity);
+			}else {
+				$("#fillSettingBox").hide();
+			}
+			
+		},
+		close : function(){
+			$("#storkeType input[name=line]:checked").prop("checked",false).button( "refresh" );
+			$("#fillSettingBox").hide();
+		}
+	});
+	
+	//도형 설정 팝업 선 종류 선택 버튼 설정 
+	$("#storkeType").buttonset();
+	
+	// 도형 설정 팝업 선 색상 colorpicker 설정 
+	$("#lineColor").spectrum({
+	    color: "#ECC",
+	    showInput: true,
+	    className: "full-spectrum",
+	    showInitial: true,
+	    showPalette: true,
+	    showSelectionPalette: true,
+	    maxSelectionSize: 10,
+	    preferredFormat: "hex",
+	    localStorageKey: "spectrum.line"
+	});
+	// 도형 설정 팝업 면 색상 colorpicker 설정 
+	$("#fillColor").spectrum({
+	    color: "#ECC",
+	    showInput: true,
+	    className: "full-spectrum",
+	    showInitial: true,
+	    showPalette: true,
+	    showSelectionPalette: true,
+	    maxSelectionSize: 10,
+	    preferredFormat: "hex",
+	    localStorageKey: "spectrum.fill"
+	});
+
+});
+
+
+
+</script>
+</head>
+<body>
+	<div id="map"></div>
+	<div id="baseMapPanel">
+		<a id="btnBaseMap" class="btn btn-info btn-xs" disabled="disabled">기본</a>
+		<a id="btnSatelliteMap" class="btn btn-info btn-xs">위성</a>
+	</div>
+	<div id="panel">
+		<a id="btnMove" class="btn btn-info btn-xs">이동</a>
+		<a id="btnDist" class="btn btn-info btn-xs">거리</a>
+		<a id="btnArea" class="btn btn-info btn-xs">면적</a>
+		<a id="btnTrash" class="btn btn-info btn-xs">삭제</a>
+		<a id="btnPopup" class="btn btn-info btn-xs">팝업</a>
+		<a id="btnCapture" class="btn btn-info btn-xs">캡쳐</a>
+		<a id="btnDraw" class="btn btn-info btn-xs">그리기</a>
+		<div id="drawPanel">
+			<a id="btnDrawLine" class="btn btn-info btn-xs">선</a>
+			<a id="btnDrawPolygon" class="btn btn-info btn-xs">면</a>
+			<a id="btnDrawSelect" class="btn btn-info btn-xs">선택</a>
+			<a id="btnDrawTrash" class="btn btn-info btn-xs">삭제</a>
+			<a id="btnDrawSetting" class="btn btn-info btn-xs">설정</a>
+		</div>
+	</div>
+	<div id="drowSettingPopup" title="그리기 설정">
+		<div id="lineSettingBox" class="row mainRow" >
+			<div class="col-xs-2 ">선설정</div>
+			<div class="col-xs-10">
+				<div class="row subrow">
+					<div class="col-xs-3">선종류</div>
+		  			<div class="col-xs-9">
+						<div id="storkeType">
+							<input type="radio" id="lineSolid" name="line" value="solid"/>
+						    <label for="lineSolid">solid</label>
+						    <input type="radio" id="lineDash" name="line" value="dash" />
+						    <label for="lineDash">dash</label>
+						    <input type="radio" id="lineDot" name="line" value="dot" />
+						    <label for="lineDot">dot</label>
+						    <input type="radio" id="lineDashdot" name="line" value="dashdot" />
+						    <label for="lineDashdot">dashdot</label>
+						    <input type="radio" id="lineLongdash" name="line" value="longdash" />
+						    <label for="lineLongdash">longdash</label>
+						    <input type="radio" id="lineLongdashdot" name="line" value="longdashdot" />
+						    <label for="lineLongdashdot">longdashdot</label>
+						</div>
+					</div>
+				</div> 
+				<div class="row subrow">
+					<div class="col-xs-3">색상</div>
+					<input class="col-xs-8" type="text" id="lineColor"/>
+				</div>
+				<div class="row subrow">
+					<div class="col-xs-3">두께</div>
+					<input class="col-xs-2" type="text" id="lineWeight"/>
+				</div>
+				<div class="row subLastRow">
+					<div class="col-xs-3">투명도</div>
+					<input class="col-xs-2" type="text" id="lineOpacity"/>
+				</div>
+			</div>
+		</div>
+		<div  id="fillSettingBox" class="row mainRow">
+			<div class="col-xs-2">면설정</div>
+			<div class="col-xs-10">
+					
+				<div class="row subrow">
+					<div class="col-xs-3">색상</div>
+					<input class="col-xs-8" type="text" id="fillColor"/>
+				</div>
+				<div class="row subLastRow">
+					<div class="col-xs-3">투명도</div>
+					<input class="col-xs-2" type="text" id="fillOpacity"/>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
