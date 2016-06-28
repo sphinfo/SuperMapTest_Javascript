@@ -80,11 +80,6 @@ var superMapInit = {
 	controlerSetting : function(){
 		superMapInit.map.addControl(new SuperMap.Control.MousePosition());
 		
-		// 그리기 control  설정
-		superMapInit.drawPoint = new SuperMap.Control.DrawFeature(drawLayer, SuperMap.Handler.Point, { multi: true});
-		superMapInit.drawLine = new SuperMap.Control.DrawFeature(drawLayer, SuperMap.Handler.Path, { multi: true});
-		superMapInit.drawPolygon = new SuperMap.Control.DrawFeature(drawLayer, SuperMap.Handler.Polygon);
-		
 		superMapInit.measurePolygon = new SuperMap.Control.Measure(SuperMap.Handler.SmcPolygonMeasure, {
 	     	id : "area",
 	     	persist : true,
@@ -123,6 +118,11 @@ var superMapInit = {
 	    		angle:0
 			}
 	    });
+		
+		// 그리기 control  설정
+		superMapInit.drawPoint = new SuperMap.Control.DrawFeature(drawLayer, SuperMap.Handler.Point, { multi: true});
+		superMapInit.drawLine = new SuperMap.Control.DrawFeature(drawLayer, SuperMap.Handler.Path, { multi: true});
+		superMapInit.drawPolygon = new SuperMap.Control.DrawFeature(drawLayer, SuperMap.Handler.Polygon);
 		
 		//Vector feature editing control
 		modifyFeature=new SuperMap.Control.ModifyFeature(drawLayer);
