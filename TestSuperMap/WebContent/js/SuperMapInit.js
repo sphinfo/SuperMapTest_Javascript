@@ -47,9 +47,9 @@ var superMapInit = {
 			units:"m",
 			//displayProjection:new SuperMap.Projection("EPSG:4326"),
 			projection:'EPSG:5186',
-			maxExtent: new SuperMap.Bounds(13871489.33 , 3910407.08, 14680019.87,  4666488.83),
+			//maxExtent: new SuperMap.Bounds(13871489.33 , 3910407.08, 14680019.87,  4666488.83),
 			controls : [
-				//new SuperMap.Control.LayerSwitcher(), 
+				new SuperMap.Control.LayerSwitcher(), 
 				// 면적 
 				new SuperMap.Control.Zoom() ,
 				new SuperMap.Control.Navigation({
@@ -74,8 +74,8 @@ var superMapInit = {
 	},
 	//Asynchronous loading layer
 	addLayer : function(){
-		superMapInit.map.addLayers([baseLayer, satelliteLayer,hybridLayer,CTPRVNLayer,vectorLayer,drawLayer]);
-		superMapInit.map.setCenter(new SuperMap.LonLat(14174150.9795765, 4495339.98139926), 0);
+		superMapInit.map.addLayers([baseLayer, satelliteLayer,hybridLayer,imsangdo8c,imsangdo7c,vectorLayer,drawLayer]);
+		superMapInit.map.setCenter(new SuperMap.LonLat(14174150.9795765, 4495339.98139926), 1);
 	},
 	controlerSetting : function(){
 		superMapInit.map.addControl(new SuperMap.Control.MousePosition());
@@ -154,13 +154,32 @@ var superMapInit = {
 		satelliteLayer.url = ['http://xdworld.vworld.kr:8080/2d/Satellite/201301/${z}/${x}/${y}.jpeg'];			
 		hybridLayer.url = ['http://xdworld.vworld.kr:8080/2d/Hybrid/201512/${z}/${x}/${y}.png'];	
 		hybridLayer.isBaseLayer = false;
-		
-		CTPRVNLayer = new SuperMap.Layer.TiledDynamicRESTLayer("시군구", url, {transparent: true, cacheEnabled: true}, {
-			projection:'EPSG:3857',
-			maxResolution : "auto",
-			isBaseLayer :false
-		});
-
+		//iServer8c
+		var url2 = "http://192.168.0.56:8090/iserver/services/map-IM_SANG_500/rest/maps/Tile_Map";
+		//iServer7c
+		var url3 = "http://192.168.0.56:9090/iserver/services/map-Test_7c/rest/maps/Map_Imsando";
+		imsangdo7c = new SuperMap.Layer.TiledDynamicRESTLayer(
+			"임상도 7c", url3, 
+			{
+				transparent: true, 
+				cacheEnabled: false
+			},{
+				//projection:'EPSG:3857',
+				maxResolution : "auto",
+				isBaseLayer :false
+			}
+		);
+		imsangdo8c = new SuperMap.Layer.TiledDynamicRESTLayer(
+				"임상도 8c", url2, 
+				{
+					transparent: true, 
+					cacheEnabled: false
+				},{
+					//projection:'EPSG:3857',
+					maxResolution : "auto",
+					isBaseLayer :false
+				}
+			);
 		vectorLayer = new SuperMap.Layer.Vector("Vector Layer", {
 		    isBaseLayer: false,
 		    style : style1
@@ -176,7 +195,7 @@ var superMapInit = {
 		});
 		
 		
-		CTPRVNLayer.events.on({
+		imsangdo7c.events.on({
 			"layerInitialized" : superMapInit.addLayer
 		});
 	},
@@ -295,6 +314,9 @@ var superMapInit = {
 				alert("선택된 도형이 없습니다.");
 			}
 		});
+		$("#btnSearch").on("click",function(){
+			superMapInit.queryResult();
+		});
 	},
 	// 선 그리기 완료 이벤트 함수 
 	drawLineCompleted : function(evt){
@@ -323,5 +345,77 @@ var superMapInit = {
 		$.each(superMapInit.controlers,function(idx,control){
 			control.deactivate();	
 		});
-	}
+	},
+	queryResult : function(){
+		vectorLayer.removeAllFeatures();
+		var url4=host+"/iserver/services/data-vWorld_Test/rest/data";
+		var getFeaturesByIDsParameters, getFeaturesByIDsService;
+		
+		getFeaturesByIDsParameters = new SuperMap.REST.GetFeaturesByIDsParameters({
+			returnContent: true,
+			datasetNames: ["sgg3:TB_FGDI_LP_AA_SGG"],
+			fromIndex: 0,
+			toIndex:-1,
+			IDs: [7]
+		});
+		var parms = SuperMap.REST.GetFeaturesByIDsParameters.toJsonParameters(getFeaturesByIDsParameters);
+		console.log(parms);
+		$.ajax({
+			async : false ,
+			url : url4+"/featureResults.jsonp?returnContent=true",
+			dataType : "jsonp",
+			method : "POST",
+			data :{
+				'requestEntity': parms
+				, _method:"POST"
+			},
+			success : function(json){
+				console.log(json);
+				var result = SuperMap.REST.GetFeaturesResult.fromJson(json);
+				if (result && result.features) {
+					$.each(result.features,function(idx,feature){
+						var geometry = feature.geometry.transform(
+					    	new SuperMap.Projection('EPSG:5179'), 
+					        new SuperMap.Projection('EPSG:900913')
+					    );
+						var transformedFeature = new SuperMap.Feature.Vector(geometry, feature.data, style2);
+						vectorLayer.addFeatures(transformedFeature);
+						console.log(transformedFeature);
+					});
+				}
+			}
+		});
+		
+		getFeaturesByIDsParameters = new SuperMap.REST.GetFeaturesByIDsParameters({
+			returnContent: true,
+			datasetNames: ["sgg3:TB_FGDI_LP_AA_SGG"],
+			fromIndex: 0,
+			toIndex:-1,
+			IDs: [8,9,10]
+		});
+		
+		getFeaturesByIDsService = new SuperMap.REST.GetFeaturesByIDsService(url4, {
+			eventListeners: {
+				"processCompleted": superMapInit.processCompleted, 
+				"processFailed": superMapInit.processFailed
+			}
+		});
+		getFeaturesByIDsService.processAsync(getFeaturesByIDsParameters);
+		
+	},
+	processCompleted : function(queryEventArgs){
+		var i, j, feature, 
+		result = queryEventArgs.result;
+		if (result && result.features) {
+			$.each(result.features,function(idx,feature){
+				var geometry = feature.geometry.transform(
+			    	new SuperMap.Projection('EPSG:5179'), 
+			        new SuperMap.Projection('EPSG:900913')
+			    );
+				var transformedFeature = new SuperMap.Feature.Vector(geometry, feature.data, style1);
+				feature.style = style1;
+				vectorLayer.addFeatures(transformedFeature);
+			});
+		}
+	},
 };
