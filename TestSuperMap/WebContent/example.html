@@ -67,6 +67,7 @@ div {
 <![endif]-->
 
 <script type="text/javascript" src="js/supermap/libs/html2canvas.js"></script>
+<script type="text/javascript" src="js/supermap/libs/html2canvas.svg.js"></script>
 <!-- <script type="text/javascript" src="js/supermap/libs/canvas2image.js"></script> -->
 <script type="text/javascript" src="js/supermap/libs/MapToImae.js"></script>
 <script type="text/javascript" src="js/spectrum.js"></script>
@@ -80,7 +81,7 @@ var map;
 // base layer 선언
 var baseLayer,satelliteLayer,hybridLayer;
 // layer 선언
-var CTPRVNLayer,vectorLayer,drawLayer,imsangdo8c,imsangdo7c;
+var CTPRVNLayer,vectorLayer,drawLayer,imsangdo8c,imsangdo7c,editLayer;
 // controller 선언
 var nav,pane,popwin,selectFeature,modifyFeature;
 var host = document.location.toString().match(/file:\/\//) ? "http://61.32.6.18:8091"
@@ -343,6 +344,12 @@ $(document).ready(function() {
 			<a id="btnDrawSetting" class="btn btn-info btn-xs">설정</a>
 		</div>
 		<a id="btnSearch" class="btn btn-info btn-xs">검색</a>
+		<a id="btnEdit" class="btn btn-info btn-xs">편집</a>
+		<div id="editPanel">
+			<a id="btnDrawPolygon" class="btn btn-info btn-xs">도형 추가</a>
+			<a id="btnDrawTrash" class="btn btn-info btn-xs">도형 편집</a>
+			<a id="btnDrawTrash" class="btn btn-info btn-xs">삭제</a>
+		</div>
 	</div>
 	<div id="drowSettingPopup" title="그리기 설정">
 		<div id="lineSettingBox" class="row mainRow" >

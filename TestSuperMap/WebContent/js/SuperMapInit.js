@@ -39,14 +39,37 @@ var superMapInit = {
 	drawPolygon : null,
 	measurePolygon : null,
     measureLine : null,
+    editPolygon : null,
+    
+    resolutions : [
+		2445.98, 1222.99, 611.50, 305.75, 
+		152.87,  76.44,   38.22,  19.11,
+		9.55,    4.78,    2.39,   1.19,
+		0.60,    0.30
+	] ,
+//	scales : [
+//		8735665.08, 4367832.54, 2183916.27, 1091958.14, 
+//		545979.07,  272989.53,  136494.77,  68247.38,
+//		34123.69,   17061.85,   8530.92,    4265.46,
+//		2132.73,    1066.37
+//	] ,
+	scales : [
+	  		9244667.3, 4622333.6, 2311166.8, 1155583.4, 
+	  		577791.7,  288895.8,  144447.9,  72223.9,
+	  		36111.9,   18055.9,   9027.9,    4513.9,
+	  		2256.9,    1128.9
+	  	] ,
     // 반경 
     measureCircle : null,
     controlers : [],
 	init : function(){
 		map=superMapInit.map = new SuperMap.Map("map", {
 			units:"m",
+			numZoomLevels : 19,
+			//maxResolution : 2445.98,
+			//maxScale : 8735665.08,
 			//displayProjection:new SuperMap.Projection("EPSG:4326"),
-			projection:'EPSG:5186',
+			projection:'EPSG:3857',
 			//maxExtent: new SuperMap.Bounds(13871489.33 , 3910407.08, 14680019.87,  4666488.83),
 			controls : [
 				new SuperMap.Control.LayerSwitcher(), 
@@ -74,7 +97,9 @@ var superMapInit = {
 	},
 	//Asynchronous loading layer
 	addLayer : function(){
-		superMapInit.map.addLayers([baseLayer, satelliteLayer,hybridLayer,imsangdo8c,imsangdo7c,vectorLayer,drawLayer]);
+		$("img").attr('crossOrigin', 'anonymous');//img.setAttribute('crossOrigin', 'anonymous');
+		
+		superMapInit.map.addLayers([baseLayer, satelliteLayer,hybridLayer,imsangdo7c,vectorLayer,drawLayer]);
 		superMapInit.map.setCenter(new SuperMap.LonLat(14174150.9795765, 4495339.98139926), 1);
 	},
 	controlerSetting : function(){
@@ -120,8 +145,8 @@ var superMapInit = {
 	    });
 		
 		// 그리기 control  설정
-		superMapInit.drawPoint = new SuperMap.Control.DrawFeature(drawLayer, SuperMap.Handler.Point, { multi: true});
-		superMapInit.drawLine = new SuperMap.Control.DrawFeature(drawLayer, SuperMap.Handler.Path, { multi: true});
+		superMapInit.drawPoint = new SuperMap.Control.DrawFeature(drawLayer, SuperMap.Handler.Point, { multi: false});
+		superMapInit.drawLine = new SuperMap.Control.DrawFeature(drawLayer, SuperMap.Handler.Path, { multi: false});
 		superMapInit.drawPolygon = new SuperMap.Control.DrawFeature(drawLayer, SuperMap.Handler.Polygon);
 		
 		//Vector feature editing control
@@ -146,40 +171,70 @@ var superMapInit = {
 	},
 	layerSetting : function(){
 		//Initialize the layer
+		
+//		baseLayer = new SuperMap.Layer.TiledDynamicRESTLayer(
+//			"기본", "http://61.32.6.18:8090/iserver/services/online_vWorld/rest/maps/OSM", 
+//			{
+//				transparent: true, 
+//				cacheEnabled: false
+//			},{
+//				//maxResolution : "auto",
+//				projection:'EPSG:3857',
+//				//resolutions :superMapInit.resolutions,
+//				scales :superMapInit.scales,
+//				//maxResolution : 2445.98,
+//				//maxScale : 8735665.08,
+//				isBaseLayer :true
+//			}
+//		);
 		baseLayer = new SuperMap.Layer.VWorldLayer("Base");
 		satelliteLayer = new SuperMap.Layer.VWorldLayer("영상");
 		hybridLayer = new SuperMap.Layer.VWorldLayer("Hybrid");
+	
 		
 		baseLayer.url = ['http://xdworld.vworld.kr:8080/2d/Base/201512/${z}/${x}/${y}.png'];
 		satelliteLayer.url = ['http://xdworld.vworld.kr:8080/2d/Satellite/201301/${z}/${x}/${y}.jpeg'];			
 		hybridLayer.url = ['http://xdworld.vworld.kr:8080/2d/Hybrid/201512/${z}/${x}/${y}.png'];	
 		hybridLayer.isBaseLayer = false;
+		
+		baseLayer.useCORS = true;
+		satelliteLayer.useCORS = true;
+		hybridLayer.useCORS = true;
+		baseLayer.useCanvas = false;
+		
 		//iServer8c
-		var url2 = "http://192.168.0.56:8090/iserver/services/map-IM_SANG_500/rest/maps/Tile_Map";
+		var url2 = "http://192.168.0.56:8090/iserver/services/map-IM_SANG_5000_1/rest/maps/Tile_Map";
 		//iServer7c
-		var url3 = "http://192.168.0.56:9090/iserver/services/map-Test_7c/rest/maps/Map_Imsando";
+		var url3 = "http://61.32.6.18:8090/iserver/services/map-im5000/rest/maps/Dynamic_IM5000";
+		var url5 = "http://192.168.0.206:8090/iserver/services/vworld2d/rest/maps/OSM" 
 		imsangdo7c = new SuperMap.Layer.TiledDynamicRESTLayer(
 			"임상도 7c", url3, 
 			{
 				transparent: true, 
-				cacheEnabled: false
+				cacheEnabled: false,
 			},{
-				//projection:'EPSG:3857',
-				maxResolution : "auto",
+				projection:'EPSG:3857',
+				//maxResolution : "auto",
+				//resolutions :superMapInit.resolutions,
+				scales :superMapInit.scales,
 				isBaseLayer :false
 			}
 		);
-		imsangdo8c = new SuperMap.Layer.TiledDynamicRESTLayer(
-				"임상도 8c", url2, 
-				{
-					transparent: true, 
-					cacheEnabled: false
-				},{
-					//projection:'EPSG:3857',
-					maxResolution : "auto",
-					isBaseLayer :false
-				}
-			);
+		imsangdo7c.useCORS = true;
+		imsangdo7c.useCanvas = false;
+//		imsangdo8c = new SuperMap.Layer.TiledDynamicRESTLayer(
+//			"임상도 8c", url2, 
+//			{
+//				transparent: true, 
+//				cacheEnabled: false
+//			},{
+//				//projection:'EPSG:3857',
+//				maxResolution : "auto",
+//				isBaseLayer :false
+//			}
+//		);
+//		imsangdo8c.useCORS = true;
+//		imsangdo8c.useCanvas = false;
 		vectorLayer = new SuperMap.Layer.Vector("Vector Layer", {
 		    isBaseLayer: false,
 		    style : style1
@@ -193,7 +248,10 @@ var superMapInit = {
 			isBaseLayer: false,
 			styleMap : drawStyleMap
 		});
-		
+		editLayer = new SuperMap.Layer.Vector("Eidt Layer",{
+			isBaseLayer: false,
+			styleMap : drawStyleMap
+		});
 		
 		imsangdo7c.events.on({
 			"layerInitialized" : superMapInit.addLayer
@@ -252,7 +310,23 @@ var superMapInit = {
 		});
 		
 		$("#btnCapture").on("click",function(){
+			
 			MapToImg&&MapToImg.excute(map);
+			
+//			var mapElem = document.getElementById('map'); // the id of your map div here
+//
+//	        html2canvas(mapElem, {
+//	          useCORS: true,
+//	          onrendered: function(canvas) {
+//	             mapImg = canvas.toDataURL('image/png');
+//	             console.log(mapImg);
+//	            // reset the map to original styling
+//
+//	            // do something here with your mapImg
+//	            // e.g. I then use the dataURL in a pdf using jsPDF...
+//	            // createPDFObject();
+//	          }
+//	        });
 		});
 		
 		// Anchored 팝업 offset 설정 (REQ-0006)
@@ -418,4 +492,5 @@ var superMapInit = {
 			});
 		}
 	},
+	
 };
