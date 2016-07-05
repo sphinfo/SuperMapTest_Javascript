@@ -172,27 +172,27 @@ var superMapInit = {
 	layerSetting : function(){
 		//Initialize the layer
 		
-//		baseLayer = new SuperMap.Layer.TiledDynamicRESTLayer(
-//			"기본", "http://61.32.6.18:8090/iserver/services/online_vWorld/rest/maps/OSM", 
-//			{
-//				transparent: true, 
-//				cacheEnabled: false
-//			},{
-//				//maxResolution : "auto",
-//				projection:'EPSG:3857',
-//				//resolutions :superMapInit.resolutions,
-//				scales :superMapInit.scales,
-//				//maxResolution : 2445.98,
-//				//maxScale : 8735665.08,
-//				isBaseLayer :true
-//			}
-//		);
-		baseLayer = new SuperMap.Layer.VWorldLayer("Base");
+		baseLayer = new SuperMap.Layer.TiledDynamicRESTLayer(
+			"기본", "http://61.32.6.18:8090/iserver/services/online_vWorld/rest/maps/OSM", 
+			{
+				transparent: true, 
+				cacheEnabled: false
+			},{
+				//maxResolution : "auto",
+				projection:'EPSG:3857',
+				//resolutions :superMapInit.resolutions,
+				scales :superMapInit.scales,
+				//maxResolution : 2445.98,
+				//maxScale : 8735665.08,
+				isBaseLayer :true
+			}
+		);
+		//baseLayer = new SuperMap.Layer.VWorldLayer("Base");
 		satelliteLayer = new SuperMap.Layer.VWorldLayer("영상");
 		hybridLayer = new SuperMap.Layer.VWorldLayer("Hybrid");
 	
 		
-		baseLayer.url = ['http://xdworld.vworld.kr:8080/2d/Base/201512/${z}/${x}/${y}.png'];
+		//baseLayer.url = ['http://xdworld.vworld.kr:8080/2d/Base/201512/${z}/${x}/${y}.png'];
 		satelliteLayer.url = ['http://xdworld.vworld.kr:8080/2d/Satellite/201301/${z}/${x}/${y}.jpeg'];			
 		hybridLayer.url = ['http://xdworld.vworld.kr:8080/2d/Hybrid/201512/${z}/${x}/${y}.png'];	
 		hybridLayer.isBaseLayer = false;
