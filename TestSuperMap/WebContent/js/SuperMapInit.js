@@ -239,10 +239,11 @@ var superMapInit = {
 //		imsangdo8c.useCORS = true;
 //		imsangdo8c.useCanvas = false;
 		
+		// 그리기 도구 텍스트 설정
 		var strategy = new SuperMap.Strategy.GeoText();
 		strategy.style = {
-			fontColor:"#FF7F00",
-			fontWeight:"bolder",
+			fontColor:"#333",
+			fontWeight:"normal",
 			fontSize:"14px",
 			fill: true,
 			fillColor: "#FFFFFF",
@@ -420,7 +421,7 @@ var superMapInit = {
 			drawPointCompleted();
 		});
 	},
-	// 선 그리기 완료 이벤트 함수 
+	// 맵 클릭 후 텍스트 등록 팝업 함수 
 	drawTextCompleted : function(evt){
 		var feature = evt.feature;
 		
@@ -447,15 +448,12 @@ var superMapInit = {
 		}catch(err){
 			console.log(err);
 		}
-		
-//		feature.style= txtStyle;
-//		feature.geotype = "text";
 	},
+	// 텍스트 지도 표시 함수 
 	drawText : function(){
 		console.log($("#drawText input").val());
 		var geoText = new SuperMap.Geometry.GeoText(popwin.lonlat.lon, popwin.lonlat.lat,$("#drawText input").val());
 		var feature = new SuperMap.Feature.Vector(geoText);
-		feature.style = txtStyle;
 		drawLayer.addFeatures([feature]);
 		map.removePopup(popwin);
 	},
