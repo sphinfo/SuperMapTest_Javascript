@@ -81,7 +81,7 @@ var map;
 // base layer 선언
 var baseLayer,satelliteLayer,hybridLayer;
 // layer 선언
-var CTPRVNLayer,vectorLayer,drawLayer,imsangdo8c,imsangdo7c,editLayer;
+var CTPRVNLayer,vectorLayer,drawLayer,imsangdo8c,imsangdo7c,editLayer,labelLayer;
 // controller 선언
 var nav,pane,popwin,selectFeature,modifyFeature;
 var host = document.location.toString().match(/file:\/\//) ? "http://61.32.6.18:8091"
@@ -191,6 +191,16 @@ var drawStyleMap = new SuperMap.StyleMap({
 	}
 });
 
+var txtStyle = {
+	fontColor:"#FF7F00",
+	fontWeight:"bolder",
+	fontSize:"14px",
+	fill: true,
+	fillColor: "#FFFFFF",
+	fillOpacity: 1,
+	stroke: true,
+	strokeColor:"#8B7B8B"
+};
 var drawFillStyle = {
 	strokeWidth: 3,
 	strokeOpacity: 1,
@@ -337,6 +347,7 @@ $(document).ready(function() {
 		<a id="btnCapture" class="btn btn-info btn-xs">캡쳐</a>
 		<a id="btnDraw" class="btn btn-info btn-xs">그리기</a>
 		<div id="drawPanel">
+			<a id="btnTextLine" class="btn btn-info btn-xs">텍스트</a>
 			<a id="btnDrawLine" class="btn btn-info btn-xs">선</a>
 			<a id="btnDrawPolygon" class="btn btn-info btn-xs">면</a>
 			<a id="btnDrawSelect" class="btn btn-info btn-xs">선택</a>

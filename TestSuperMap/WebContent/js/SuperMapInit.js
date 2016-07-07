@@ -66,10 +66,11 @@ var superMapInit = {
 		map=superMapInit.map = new SuperMap.Map("map", {
 			units:"m",
 			numZoomLevels : 19,
+			allOverlays : true,
 			//maxResolution : 2445.98,
 			//maxScale : 8735665.08,
 			//displayProjection:new SuperMap.Projection("EPSG:4326"),
-			projection:'EPSG:3857',
+			projection:'EPSG:5186',
 			//maxExtent: new SuperMap.Bounds(13871489.33 , 3910407.08, 14680019.87,  4666488.83),
 			controls : [
 				new SuperMap.Control.LayerSwitcher(), 
@@ -145,7 +146,7 @@ var superMapInit = {
 	    });
 		
 		// 그리기 control  설정
-		superMapInit.drawPoint = new SuperMap.Control.DrawFeature(drawLayer, SuperMap.Handler.Point, { multi: false});
+		superMapInit.drawPoint = new SuperMap.Control.DrawFeature(drawLayer, SuperMap.Handler.Point, { multi: false,persist:true,double:false});
 		superMapInit.drawLine = new SuperMap.Control.DrawFeature(drawLayer, SuperMap.Handler.Path, { multi: false});
 		superMapInit.drawPolygon = new SuperMap.Control.DrawFeature(drawLayer, SuperMap.Handler.Polygon);
 		
@@ -162,7 +163,8 @@ var superMapInit = {
 			modifyFeature
 		];
 		
-		// 선,면 그리기 완료 이벤트 설정 
+		// 텍스트,선,면 그리기 완료 이벤트 설정 
+		superMapInit.drawPoint.events.on({"featureadded": superMapInit.drawTextCompleted});
 		superMapInit.drawPolygon.events.on({"featureadded": superMapInit.drawPolygonCompleted});
 		superMapInit.drawLine.events.on({"featureadded": superMapInit.drawLineCompleted});
 		
@@ -171,9 +173,10 @@ var superMapInit = {
 	},
 	layerSetting : function(){
 		//Initialize the layer
+		//http://61.32.6.18:8090/iserver/services/online_vWorld/rest/maps/OSM
 		
 		baseLayer = new SuperMap.Layer.TiledDynamicRESTLayer(
-			"기본", "http://61.32.6.18:8090/iserver/services/online_vWorld/rest/maps/OSM", 
+			"기본", "http://192.168.0.206:8090/iserver/services/vworld2d/rest/maps/OSM", 
 			{
 				transparent: true, 
 				cacheEnabled: false
@@ -206,14 +209,14 @@ var superMapInit = {
 		var url2 = "http://192.168.0.56:8090/iserver/services/map-IM_SANG_5000_1/rest/maps/Tile_Map";
 		//iServer7c
 		var url3 = "http://61.32.6.18:8090/iserver/services/map-im5000/rest/maps/Dynamic_IM5000";
-		var url5 = "http://192.168.0.206:8090/iserver/services/vworld2d/rest/maps/OSM" 
+		var url5 = "http://192.168.0.247:8090/iserver/services/map-Change_SuperMan/rest/maps/행정구역" 
 		imsangdo7c = new SuperMap.Layer.TiledDynamicRESTLayer(
-			"임상도 7c", url3, 
+			"임상도 7c", url5, 
 			{
 				transparent: true, 
 				cacheEnabled: false,
 			},{
-				projection:'EPSG:3857',
+				projection:'EPSG:5186',
 				//maxResolution : "auto",
 				//resolutions :superMapInit.resolutions,
 				scales :superMapInit.scales,
@@ -235,6 +238,19 @@ var superMapInit = {
 //		);
 //		imsangdo8c.useCORS = true;
 //		imsangdo8c.useCanvas = false;
+		
+		var strategy = new SuperMap.Strategy.GeoText();
+		strategy.style = {
+			fontColor:"#FF7F00",
+			fontWeight:"bolder",
+			fontSize:"14px",
+			fill: true,
+			fillColor: "#FFFFFF",
+			fillOpacity: 1,
+			stroke: true,
+			strokeColor:"#8B7B8B"
+		};
+		
 		vectorLayer = new SuperMap.Layer.Vector("Vector Layer", {
 		    isBaseLayer: false,
 		    style : style1
@@ -246,12 +262,14 @@ var superMapInit = {
 		// 그리기 도구 레이어
 		drawLayer = new SuperMap.Layer.Vector("Draw Layer",{
 			isBaseLayer: false,
+			strategies: [strategy] ,
 			styleMap : drawStyleMap
 		});
 		editLayer = new SuperMap.Layer.Vector("Eidt Layer",{
 			isBaseLayer: false,
 			styleMap : drawStyleMap
 		});
+		
 		
 		imsangdo7c.events.on({
 			"layerInitialized" : superMapInit.addLayer
@@ -356,6 +374,15 @@ var superMapInit = {
 		$("#btnDraw").on("click",function(){
 			$("#drawPanel").toggle();
 		});
+		$("#btnEdit").on("click",function(){
+			$("#editPanel").toggle();
+		});
+		// 텍스트 그리기 버튼 클릭 이벤트
+		$("#btnTextLine").on("click",function(){
+			superMapInit.clearControlAll();
+			superMapInit.drawPoint.activate()
+		});
+		
 		// 선 그리기 버튼 클릭 이벤트
 		$("#btnDrawLine").on("click",function(){
 			superMapInit.clearControlAll();
@@ -389,8 +416,48 @@ var superMapInit = {
 			}
 		});
 		$("#btnSearch").on("click",function(){
-			superMapInit.queryResult();
+			//superMapInit.queryResult();
+			drawPointCompleted();
 		});
+	},
+	// 선 그리기 완료 이벤트 함수 
+	drawTextCompleted : function(evt){
+		var feature = evt.feature;
+		
+		superMapInit.clearControlAll();
+		var contentHTML = '<div class="input-group" style="width:180px;">' ;
+		contentHTML += '<input type="text" class="form-control" placeholder="">' ;
+		contentHTML += '<span class="input-group-btn">' ;
+		contentHTML += '<button onClick="superMapInit.drawText()" class="btn btn-default" type="button">등록</button>' ;
+		contentHTML += '</span>' ;
+		contentHTML += '</div>'
+		if(popwin) map.removePopup(popwin);
+		try{
+			popwin = new SuperMap.Popup.FramedCloud(
+				"drawText",
+				new SuperMap.LonLat(feature.geometry.x,feature.geometry.y),
+				new SuperMap.Size(80,20),
+				contentHTML,
+				null,
+				false,
+				null
+			);
+			map.addPopup(popwin);
+			drawLayer.removeFeatures(feature);
+		}catch(err){
+			console.log(err);
+		}
+		
+//		feature.style= txtStyle;
+//		feature.geotype = "text";
+	},
+	drawText : function(){
+		console.log($("#drawText input").val());
+		var geoText = new SuperMap.Geometry.GeoText(popwin.lonlat.lon, popwin.lonlat.lat,$("#drawText input").val());
+		var feature = new SuperMap.Feature.Vector(geoText);
+		feature.style = txtStyle;
+		drawLayer.addFeatures([feature]);
+		map.removePopup(popwin);
 	},
 	// 선 그리기 완료 이벤트 함수 
 	drawLineCompleted : function(evt){
@@ -494,3 +561,42 @@ var superMapInit = {
 	},
 	
 };
+
+function drawPointCompleted() {
+	var mapCenter = map.getCenter();
+    var geometry = new SuperMap.Geometry.Point(mapCenter.lon, mapCenter.lat);
+    vectorLayer.removeAllFeatures();
+    var getFeaturesByGeometryParameters, getFeaturesByGeometryService;
+    getFeaturesByGeometryParameters = new SuperMap.REST.GetFeaturesByGeometryParameters({
+        datasetNames: ["PostgreSQL:TL_SPBD_BULD"],
+        toIndex:-1,
+        spatialQueryMode:SuperMap.REST.SpatialQueryMode.INTERSECT,
+        geometry: geometry
+    });
+    getFeaturesByGeometryService = new SuperMap.REST.GetFeaturesByGeometryService(
+            		"http://192.168.0.247:8090/iserver/services/data-Change_SuperMan/rest/data", {
+        eventListeners: {
+            "processCompleted": processCompleted,
+            "processFailed": superMapInit.processFailed
+        }
+    });
+    getFeaturesByGeometryService.processAsync(getFeaturesByGeometryParameters);
+}
+function processCompleted(getFeaturesEventArgs) {
+    var i, len, features, feature, result = getFeaturesEventArgs.result;
+    if (result && result.features) {
+    	features = result.features
+    	if(features.length>0){
+            for (i=0, len=features.length; i<len; i++) {
+                feature = features[i];
+                feature.style = style1;
+                vectorLayer.addFeatures(feature);
+            }
+    	}else {
+    		alert("No Data");
+    	}
+        
+    }else {
+    	alert("No Result");
+    }
+}

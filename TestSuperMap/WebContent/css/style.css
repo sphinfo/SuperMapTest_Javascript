@@ -81,7 +81,18 @@ div#drawPanel{
 	position: absolute;
 	right: 43px; 
 	bottom: -20px; 
-	width: 100px;
+	width: 180px;
+	padding: 5px;
+    background: #fff;
+    text-align: center;
+    border: solid 1px #2b5057;
+    display: none;
+}
+div#editPanel{
+	position: absolute;
+	right: 43px; 
+	bottom: -20px; 
+	width: 180px;
 	padding: 5px;
     background: #fff;
     text-align: center;
