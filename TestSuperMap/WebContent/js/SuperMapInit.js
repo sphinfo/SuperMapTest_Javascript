@@ -151,7 +151,13 @@ var superMapInit = {
 		superMapInit.drawPolygon = new SuperMap.Control.DrawFeature(drawLayer, SuperMap.Handler.Polygon);
 		
 		//Vector feature editing control
-		modifyFeature=new SuperMap.Control.ModifyFeature(drawLayer);
+		modifyFeature=new SuperMap.Control.ModifyFeatureD(drawLayer,{
+			callbacks : {
+				click : function(currentFeature){
+					console.log(currentFeature.geometry.CLASS_NAME);
+				}
+			}
+		});
 		modifyFeature.mode |= SuperMap.Control.ModifyFeature.DRAG;
 		//modifyFeature.mode |= SuperMap.Control.ModifyFeature.RESIZE;
 		modifyFeature.mode |= SuperMap.Control.ModifyFeature.ROTATE;
@@ -162,7 +168,7 @@ var superMapInit = {
 			superMapInit.drawPoint,superMapInit.drawLine,superMapInit.drawPolygon,
 			modifyFeature
 		];
-		
+
 		// 텍스트,선,면 그리기 완료 이벤트 설정 
 		superMapInit.drawPoint.events.on({"featureadded": superMapInit.drawTextCompleted});
 		superMapInit.drawPolygon.events.on({"featureadded": superMapInit.drawPolygonCompleted});
@@ -206,12 +212,17 @@ var superMapInit = {
 		baseLayer.useCanvas = false;
 		
 		//iServer8c
-		var url2 = "http://192.168.0.56:8090/iserver/services/map-IM_SANG_5000_1/rest/maps/Tile_Map";
+		var url2 = "http://61.32.6.18:8091/iserver/services/map-vWorld_Test/rest/maps/SGG_5186";
+		var urlWms = "http://61.32.6.18:8091/iserver/services/map-Asiana/wms111/Asiana";
 		//iServer7c
 		var url3 = "http://61.32.6.18:8090/iserver/services/map-im5000/rest/maps/Dynamic_IM5000";
-		var url5 = "http://192.168.0.247:8090/iserver/services/map-Change_SuperMan/rest/maps/행정구역" 
+		var url5 = "http://192.168.0.247:8090/iserver/services/map-Change_SuperMan/rest/maps/행정구역" ;
+		
+		//imsangdo7c = new SuperMap.Layer.WMS("Asiana",urlWms,{layers: "Asiana"});
+		
+		
 		imsangdo7c = new SuperMap.Layer.TiledDynamicRESTLayer(
-			"임상도 7c", url5, 
+			"임상도 7c", url2, 
 			{
 				transparent: true, 
 				cacheEnabled: false,
@@ -451,9 +462,10 @@ var superMapInit = {
 	},
 	// 텍스트 지도 표시 함수 
 	drawText : function(){
-		console.log($("#drawText input").val());
 		var geoText = new SuperMap.Geometry.GeoText(popwin.lonlat.lon, popwin.lonlat.lat,$("#drawText input").val());
+		geoText.components=[];
 		var feature = new SuperMap.Feature.Vector(geoText);
+		console.log(feature.geometry.CLASS_NAME);
 		drawLayer.addFeatures([feature]);
 		map.removePopup(popwin);
 	},
