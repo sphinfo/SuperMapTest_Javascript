@@ -80,7 +80,7 @@ div.smControlMeasureContent span.measureResCon {
 div#drawPanel{
 	position: absolute;
 	right: 43px; 
-	bottom: -20px; 
+	bottom: 10px; 
 	width: 180px;
 	padding: 5px;
     background: #fff;

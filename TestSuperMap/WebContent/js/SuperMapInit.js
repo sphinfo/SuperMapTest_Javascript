@@ -1,7 +1,6 @@
 
-
 var superMapInit = {
-	feutureCallBack  : {
+	featureCallBack  : {
 		over: function(currentFeature){
 	    	//todo
 	    	console.log(" over: ");
@@ -39,7 +38,9 @@ var superMapInit = {
 	drawPolygon : null,
 	measurePolygon : null,
     measureLine : null,
-    editPolygon : null,
+    editPoint : null,
+	editLine : null,
+	editPolygon : null,
     
     resolutions : [
 		2445.98, 1222.99, 611.50, 305.75, 
@@ -47,18 +48,12 @@ var superMapInit = {
 		9.55,    4.78,    2.39,   1.19,
 		0.60,    0.30
 	] ,
-//	scales : [
-//		8735665.08, 4367832.54, 2183916.27, 1091958.14, 
-//		545979.07,  272989.53,  136494.77,  68247.38,
-//		34123.69,   17061.85,   8530.92,    4265.46,
-//		2132.73,    1066.37
-//	] ,
 	scales : [
-	  		9244667.3, 4622333.6, 2311166.8, 1155583.4, 
-	  		577791.7,  288895.8,  144447.9,  72223.9,
-	  		36111.9,   18055.9,   9027.9,    4513.9,
-	  		2256.9,    1128.9
-	  	] ,
+  		9244667.3, 4622333.6, 2311166.8, 1155583.4, 
+  		577791.7,  288895.8,  144447.9,  72223.9,
+  		36111.9,   18055.9,   9027.9,    4513.9,
+  		2256.9,    1128.9
+  	] ,
     // 반경 
     measureCircle : null,
     controlers : [],
@@ -66,12 +61,7 @@ var superMapInit = {
 		map=superMapInit.map = new SuperMap.Map("map", {
 			units:"m",
 			numZoomLevels : 19,
-			allOverlays : true,
-			//maxResolution : 2445.98,
-			//maxScale : 8735665.08,
-			//displayProjection:new SuperMap.Projection("EPSG:4326"),
-			projection:'EPSG:5186',
-			//maxExtent: new SuperMap.Bounds(13871489.33 , 3910407.08, 14680019.87,  4666488.83),
+			allOverlays : true ,
 			controls : [
 				new SuperMap.Control.LayerSwitcher(), 
 				// 면적 
@@ -85,7 +75,11 @@ var superMapInit = {
 				})
 			]
 		});
-		
+		map.events.on({
+			"moveend" : function(e){
+				
+			}
+		});
 		// 레이어 설정 
 		superMapInit.layerSetting();
 		// 맵 control 설정 
@@ -99,9 +93,9 @@ var superMapInit = {
 	//Asynchronous loading layer
 	addLayer : function(){
 		$("img").attr('crossOrigin', 'anonymous');//img.setAttribute('crossOrigin', 'anonymous');
-		
-		superMapInit.map.addLayers([baseLayer, satelliteLayer,hybridLayer,imsangdo7c,vectorLayer,drawLayer]);
+		superMapInit.map.addLayers([baseLayer, satelliteLayer,hybridLayer,imsangdo7c,vectorLayer,drawLayer,editLayer,searchLayer]);
 		superMapInit.map.setCenter(new SuperMap.LonLat(14174150.9795765, 4495339.98139926), 1);
+		superMapInit.getEditData();
 	},
 	controlerSetting : function(){
 		superMapInit.map.addControl(new SuperMap.Control.MousePosition());
@@ -145,36 +139,19 @@ var superMapInit = {
 			}
 	    });
 		
-		// 그리기 control  설정
-		superMapInit.drawPoint = new SuperMap.Control.DrawFeature(drawLayer, SuperMap.Handler.Point, { multi: false,persist:true,double:false});
-		superMapInit.drawLine = new SuperMap.Control.DrawFeature(drawLayer, SuperMap.Handler.Path, { multi: false});
-		superMapInit.drawPolygon = new SuperMap.Control.DrawFeature(drawLayer, SuperMap.Handler.Polygon);
-		
-		//Vector feature editing control
-		modifyFeature=new SuperMap.Control.ModifyFeatureD(drawLayer,{
-			callbacks : {
-				click : function(currentFeature){
-					console.log(currentFeature.geometry.CLASS_NAME);
-				}
-			}
-		});
-		modifyFeature.mode |= SuperMap.Control.ModifyFeature.DRAG;
-		//modifyFeature.mode |= SuperMap.Control.ModifyFeature.RESIZE;
-		modifyFeature.mode |= SuperMap.Control.ModifyFeature.ROTATE;
+		// 그리기 control 설정
+		SmDraw.control();
+		// 편집 control 설정
+		SmEdit.control();
 		
 		// control 추가  
 		superMapInit.controlers = [
 			superMapInit.measurePolygon,superMapInit.measureLine,superMapInit.measureCircle,
 			superMapInit.drawPoint,superMapInit.drawLine,superMapInit.drawPolygon,
-			modifyFeature
+			superMapInit.editPoint,superMapInit.editLine,superMapInit.editPolygon,
+			modifyFeature,editFeature
 		];
 
-		// 텍스트,선,면 그리기 완료 이벤트 설정 
-		superMapInit.drawPoint.events.on({"featureadded": superMapInit.drawTextCompleted});
-		superMapInit.drawPolygon.events.on({"featureadded": superMapInit.drawPolygonCompleted});
-		superMapInit.drawLine.events.on({"featureadded": superMapInit.drawLineCompleted});
-		
-		
 		superMapInit.map.addControls(superMapInit.controlers);
 	},
 	layerSetting : function(){
@@ -187,12 +164,8 @@ var superMapInit = {
 				transparent: true, 
 				cacheEnabled: false
 			},{
-				//maxResolution : "auto",
 				projection:'EPSG:3857',
-				//resolutions :superMapInit.resolutions,
 				scales :superMapInit.scales,
-				//maxResolution : 2445.98,
-				//maxScale : 8735665.08,
 				isBaseLayer :true
 			}
 		);
@@ -213,23 +186,20 @@ var superMapInit = {
 		
 		//iServer8c
 		var url2 = "http://61.32.6.18:8091/iserver/services/map-vWorld_Test/rest/maps/SGG_5186";
-		var urlWms = "http://61.32.6.18:8091/iserver/services/map-Asiana/wms111/Asiana";
+		var urlWms = "http://61.32.6.18:8090/iserver/services/map-edit_test/rest/maps/test_point@test5186";
 		//iServer7c
 		var url3 = "http://61.32.6.18:8090/iserver/services/map-im5000/rest/maps/Dynamic_IM5000";
 		var url5 = "http://192.168.0.247:8090/iserver/services/map-Change_SuperMan/rest/maps/행정구역" ;
 		
 		//imsangdo7c = new SuperMap.Layer.WMS("Asiana",urlWms,{layers: "Asiana"});
-		
-		
+
 		imsangdo7c = new SuperMap.Layer.TiledDynamicRESTLayer(
-			"임상도 7c", url2, 
+			"임상도 7c", url3, 
 			{
 				transparent: true, 
 				cacheEnabled: false,
 			},{
-				projection:'EPSG:5186',
-				//maxResolution : "auto",
-				//resolutions :superMapInit.resolutions,
+				projection:'EPSG:3857',
 				scales :superMapInit.scales,
 				isBaseLayer :false
 			}
@@ -250,19 +220,6 @@ var superMapInit = {
 //		imsangdo8c.useCORS = true;
 //		imsangdo8c.useCanvas = false;
 		
-		// 그리기 도구 텍스트 설정
-		var strategy = new SuperMap.Strategy.GeoText();
-		strategy.style = {
-			fontColor:"#333",
-			fontWeight:"normal",
-			fontSize:"14px",
-			fill: true,
-			fillColor: "#FFFFFF",
-			fillOpacity: 1,
-			stroke: true,
-			strokeColor:"#8B7B8B"
-		};
-		
 		vectorLayer = new SuperMap.Layer.Vector("Vector Layer", {
 		    isBaseLayer: false,
 		    style : style1
@@ -271,20 +228,13 @@ var superMapInit = {
 			console.log(e);
 		}});
 		
-		// 그리기 도구 레이어
-		drawLayer = new SuperMap.Layer.Vector("Draw Layer",{
-			isBaseLayer: false,
-			strategies: [strategy] ,
-			styleMap : drawStyleMap
-		});
-		editLayer = new SuperMap.Layer.Vector("Eidt Layer",{
-			isBaseLayer: false,
-			styleMap : drawStyleMap
-		});
-		
-		
+		SmDraw.layer();
+		SmEdit.layer();
 		imsangdo7c.events.on({
-			"layerInitialized" : superMapInit.addLayer
+			"layerInitialized" : superMapInit.addLayer,
+			"loadend" : function(){
+				
+			}
 		});
 	},
 	baseMapChange :function(){
@@ -408,6 +358,7 @@ var superMapInit = {
 		// 도형 선택 버튼 이벤트 
 		$("#btnDrawSelect").on("click",function(){
 			superMapInit.clearControlAll();
+			superMapInit.moveLayerToTop(drawLayer);
 			modifyFeature.activate()
 		});
 		// 선/면등 도형을 레이어에서 삭제
@@ -423,65 +374,48 @@ var superMapInit = {
 			if(drawLayer.selectedFeatures.length>0){
 				$("#drowSettingPopup").dialog("open");
 			}else {
-				
 				alert("선택된 도형이 없습니다.");
 			}
 		});
+		
+		// 텍스트 그리기 버튼 클릭 이벤트
+		$("#btnEditPoint").on("click",function(){
+			superMapInit.clearControlAll();
+			superMapInit.editPoint.activate()
+		});
+		
+		// 선 그리기 버튼 클릭 이벤트
+		$("#btnEditLine").on("click",function(){
+			superMapInit.clearControlAll();
+			superMapInit.editLine.activate()
+		});
+		// 면 그리기 버튼 클릭 이벤트
+		$("#btnEditPolygon").on("click",function(){
+			superMapInit.clearControlAll();
+			superMapInit.editPolygon.activate()
+		});
+		// 도형 선택 버튼 이벤트 
+		$("#btnEditSelect").on("click",function(){
+			superMapInit.clearControlAll();
+			superMapInit.moveLayerToTop(searchLayer);
+			editFeature.activate()
+		});
+		// 선/면등 도형을 레이어에서 삭제
+		$("#btnEditTrash").on("click",function(){
+			superMapInit.clearControlAll();
+			editLayer.removeAllFeatures();
+			
+			if(searchLayer.selectedFeatures.length>0){
+				SmEdit.editDelete(searchLayer.selectedFeatures);
+			}else {
+				alert("선택된 도형이 없습니다.");
+			}
+		});
+		
 		$("#btnSearch").on("click",function(){
 			//superMapInit.queryResult();
 			drawPointCompleted();
 		});
-	},
-	// 맵 클릭 후 텍스트 등록 팝업 함수 
-	drawTextCompleted : function(evt){
-		var feature = evt.feature;
-		
-		superMapInit.clearControlAll();
-		var contentHTML = '<div class="input-group" style="width:180px;">' ;
-		contentHTML += '<input type="text" class="form-control" placeholder="">' ;
-		contentHTML += '<span class="input-group-btn">' ;
-		contentHTML += '<button onClick="superMapInit.drawText()" class="btn btn-default" type="button">등록</button>' ;
-		contentHTML += '</span>' ;
-		contentHTML += '</div>'
-		if(popwin) map.removePopup(popwin);
-		try{
-			popwin = new SuperMap.Popup.FramedCloud(
-				"drawText",
-				new SuperMap.LonLat(feature.geometry.x,feature.geometry.y),
-				new SuperMap.Size(80,20),
-				contentHTML,
-				null,
-				false,
-				null
-			);
-			map.addPopup(popwin);
-			drawLayer.removeFeatures(feature);
-		}catch(err){
-			console.log(err);
-		}
-	},
-	// 텍스트 지도 표시 함수 
-	drawText : function(){
-		var geoText = new SuperMap.Geometry.GeoText(popwin.lonlat.lon, popwin.lonlat.lat,$("#drawText input").val());
-		geoText.components=[];
-		var feature = new SuperMap.Feature.Vector(geoText);
-		console.log(feature.geometry.CLASS_NAME);
-		drawLayer.addFeatures([feature]);
-		map.removePopup(popwin);
-	},
-	// 선 그리기 완료 이벤트 함수 
-	drawLineCompleted : function(evt){
-		var feature = evt.feature;
-		$("#btnDrawSelect").trigger("click");
-		feature.style= drawLineStyle;
-		feature.geotype = "line";
-	},
-	// 면 그리기 완료 이벤트 함수 
-	drawPolygonCompleted : function(evt){
-		var feature = evt.feature;
-		$("#btnDrawSelect").trigger("click");
-		feature.style= drawFillStyle;
-		feature.geotype = "polygon";
 	},
 	processFailed : function (e) {
 		alert(e.error.errorMsg);
@@ -491,12 +425,70 @@ var superMapInit = {
 		vectorLayer.removeAllFeatures();
 		vectorLayer.refresh();
 	},
+
+	
+	// 도형편집 데이터 호출  
+	getEditData :function(){
+		searchLayer.removeAllFeatures();
+		var editUrl = SmEdit.editDataUrl;
+		var getFeatureParam, getFeatureBySQLService, getFeatureBySQLParams;
+
+		getFeatureParam = new SuperMap.REST.FilterParameter({
+			//name: "Countries@World"
+			attributeFilter: "1=1"
+		});
+		getFeatureBySQLParams = new SuperMap.REST.GetFeaturesBySQLParameters({
+			queryParameter: getFeatureParam,
+			datasetNames:["test5186:test_point","test5186:test_line","test5186:test_polygon"]
+		});
+		getFeatureBySQLService = new SuperMap.REST.GetFeaturesBySQLService(editUrl, {
+		eventListeners: {"processCompleted": superMapInit.editDataCompleted, "processFailed": superMapInit.processFailed}});
+
+		getFeatureBySQLService.processAsync(getFeatureBySQLParams);
+	},
+	
+	// 도형 편집 데이터 호출 완료 함수 
+	editDataCompleted:function(queryEventArgs){
+		var i, j, feature, 
+		result = queryEventArgs.result;
+		if (result && result.features) {
+			$.each(result.features,function(idx,feature){
+				
+				var geometry = feature.geometry.transform(
+			    	new SuperMap.Projection('EPSG:5186'), 
+			        new SuperMap.Projection('EPSG:900913')
+			    );
+				
+				console.log(geometry);
+				var transformedFeature = new SuperMap.Feature.Vector(geometry, feature.data);
+				searchLayer.addFeatures(transformedFeature);
+			});
+			searchLayer.refresh();
+		}
+	},
 	// 전체 control deactivate 
 	clearControlAll : function(){
 		$.each(superMapInit.controlers,function(idx,control){
 			control.deactivate();	
 		});
+		if(popwin)map.removePopup(popwin);
+		editLayer.removeAllFeatures();
+		editLayer.refresh();
 	},
+	
+	//레이어 z인덱스 최상위로 변경
+	moveLayerToTop: function(targetLayer) {
+		var targetIndex = targetLayer.getZIndex();
+		var maxIndex = targetLayer.getZIndex();
+		$.each(map.layers,function(idx,layer){
+			var layerIdx = layer.getZIndex();
+			if(targetIndex<layerIdx){
+				maxIndex = layerIdx
+				layer.setZIndex(layerIdx-1);
+			}
+		});
+		targetLayer.setZIndex(maxIndex);
+    },
 	queryResult : function(){
 		vectorLayer.removeAllFeatures();
 		var url4=host+"/iserver/services/data-vWorld_Test/rest/data";

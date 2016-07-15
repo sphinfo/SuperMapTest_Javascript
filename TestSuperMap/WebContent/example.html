@@ -49,17 +49,17 @@ div {
 /* 	height: 30px; */
 	width: 72px;
 }
+
 </style>
-<script type="text/javascript"
-	src="js/supermap/libs/proj4js/proj4js-combined.js"></script>
-<script type="text/javascript"
-	src="js/supermap/libs/SuperMap.Include.js"></script>
-<script type="text/javascript"
-	src="js/supermap/libs/VWorldLayer.js"></script>
-<script type="text/javascript"
-	src="js/supermap/libs/MeasureCustom.js"></script>
-<script type="text/javascript"
-	src="js/supermap/libs/ModifyFeature.js"></script>
+<script type="text/javascript" src="js/supermap/libs/proj4js/proj4js-combined.js"></script>
+<script type="text/javascript" src="js/supermap/libs/proj4js/defs/EPSG-1000.js"></script>
+<script type="text/javascript" src="js/supermap/libs/proj4js/defs/EPSG3857.js"></script>
+<script type="text/javascript" src="js/supermap/libs/proj4js/defs/EPSG5186.js"></script>
+<script type="text/javascript" src="js/supermap/libs/proj4js/defs/EPSG900913.js"></script>
+<script type="text/javascript" src="js/supermap/libs/SuperMap.Include.js"></script>
+<script type="text/javascript" src="js/supermap/libs/VWorldLayer.js"></script>
+<script type="text/javascript" src="js/supermap/libs/MeasureCustom.js"></script>
+<script type="text/javascript" src="js/supermap/libs/ModifyFeature.js"></script>
 <script type="text/javascript" src="js/jquery-1.12.3.js"></script>
 <script type="text/javascript" src="js/bootstrap.js"></script>
 <script type="text/javascript" src="js/jquery-ui.js"></script>
@@ -73,8 +73,11 @@ div {
 <!-- <script type="text/javascript" src="js/supermap/libs/canvas2image.js"></script> -->
 <script type="text/javascript" src="js/supermap/libs/MapToImae.js"></script>
 <script type="text/javascript" src="js/spectrum.js"></script>
-<script type="text/javascript" src="js/SuperMapInit.js"></script>
 
+<script type="text/javascript" src="js/drawFunc.js"></script>
+<script type="text/javascript" src="js/editFunc.js"></script>
+
+<script type="text/javascript" src="js/SuperMapInit.js"></script>
 
 <script type="text/javascript">
 //IE8이하 console 처리
@@ -83,9 +86,9 @@ var map;
 // base layer 선언
 var baseLayer,satelliteLayer,hybridLayer;
 // layer 선언
-var CTPRVNLayer,vectorLayer,drawLayer,imsangdo8c,imsangdo7c,editLayer,labelLayer;
+var CTPRVNLayer,vectorLayer,drawLayer,imsangdo8c,imsangdo7c,editLayer,searchLayer;
 // controller 선언
-var nav,pane,popwin,selectFeature,modifyFeature;
+var nav,pane,popwin,selectFeature,modifyFeature,editFeature;
 var host = document.location.toString().match(/file:\/\//) ? "http://61.32.6.18:8091"
 		: 'http://61.32.6.18:8091';
 var url = host+"/iserver/services/map-vWorld_Test/rest/maps/SGG_5186";
@@ -192,7 +195,46 @@ var drawStyleMap = new SuperMap.StyleMap({
         graphicZIndex:2
 	}
 });
-
+var editStyleMap = new SuperMap.StyleMap({
+	'default': new SuperMap.Style(null, {
+		rules: [new SuperMap.Rule({
+			symbolizer : {
+				"Point": {
+					pointRadius: 4,
+					graphicName: "square",
+					fillColor: "#304DBE",
+					fillOpacity: 1,
+					strokeWidth: 1,
+					strokeOpacity: 1,
+					strokeColor: "#ffffff"
+				},
+				"Line": {
+					strokeWidth: 3,
+					strokeOpacity: 1,
+					strokeColor: "#ffffff",
+					strokeDashstyle: "solid",
+				},
+				"Polygon": {
+					strokeWidth: 3,
+					strokeOpacity: 1,
+					strokeColor: "#ffffff",
+					strokeDashstyle: "solid",
+					fillColor: "#304DBE",
+					fillOpacity: 0.8
+				}
+			}
+		})]
+	}),
+	"select":{
+		strokeWidth: 3,
+		strokeOpacity: 1,
+		strokeColor: "#304DBE",
+		strokeDashstyle: "solid",
+		fillColor: "#cdeddc",
+		fillOpacity: 0.8,
+        graphicZIndex:2
+	}
+});
 var drawFillStyle = {
 	strokeWidth: 3,
 	strokeOpacity: 1,
@@ -231,6 +273,7 @@ var squareUnits = "SQUARE";
 
 $(document).ready(function() {
 	superMapInit.init();
+	
 	// 도형 설정 팝업 설정
 	$("#drowSettingPopup").dialog({
 		autoOpen: false,
@@ -349,9 +392,11 @@ $(document).ready(function() {
 		<a id="btnSearch" class="btn btn-info btn-xs">검색</a>
 		<a id="btnEdit" class="btn btn-info btn-xs">편집</a>
 		<div id="editPanel">
-			<a id="btnDrawPolygon" class="btn btn-info btn-xs">도형 추가</a>
-			<a id="btnDrawTrash" class="btn btn-info btn-xs">도형 편집</a>
-			<a id="btnDrawTrash" class="btn btn-info btn-xs">삭제</a>
+			<a id="btnEditPoint" class="btn btn-info btn-xs">점</a>
+			<a id="btnEditLine" class="btn btn-info btn-xs">선</a>
+			<a id="btnEditPolygon" class="btn btn-info btn-xs">면</a>
+			<a id="btnEditSelect" class="btn btn-info btn-xs">선택</a>
+			<a id="btnEditTrash" class="btn btn-info btn-xs">삭제</a>
 		</div>
 	</div>
 	<div id="drowSettingPopup" title="그리기 설정">
