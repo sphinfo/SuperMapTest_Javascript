@@ -98,7 +98,7 @@ SmEdit = {
             editType: SuperMap.REST.EditType.ADD,
             returnContent:false
         });
-		var editUrl = superMapInit.editDataUrl+"/";
+		var editUrl = SmEdit.editDataUrl+"/";
 		if(geometry.CLASS_NAME=="SuperMap.Geometry.Point"){
 			editUrl += "datasources/test5186/datasets/test_point/";
 		}else if(geometry.CLASS_NAME=="SuperMap.Geometry.LineString"){
