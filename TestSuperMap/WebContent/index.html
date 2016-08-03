@@ -12,8 +12,13 @@
 			}
 		</style>
 		<!--reference the script-->
-		<script src="./js/SuperMap.Include.js"></script>
-		<script src="./js/VWorldLayer.js"></script>
+		<script type="text/javascript" src="js/supermap/libs/proj4js/proj4js-combined.js"></script>
+<script type="text/javascript" src="js/supermap/libs/proj4js/defs/EPSG-1000.js"></script>
+<script type="text/javascript" src="js/supermap/libs/proj4js/defs/EPSG3857.js"></script>
+<script type="text/javascript" src="js/supermap/libs/proj4js/defs/EPSG5186.js"></script>
+<script type="text/javascript" src="js/supermap/libs/proj4js/defs/EPSG900913.js"></script>
+		<script type="text/javascript"
+			src="js/supermap/libs/SuperMap.Include.js"></script>
 		<script type="text/javascript">
 			//declare the variables map, layer, url
 			var map, baseLayer, satelliteLayer, url;
@@ -29,18 +34,54 @@
 						dragPanOptions : {
 							enableKinetic : true
 						}
-					})]
+					})],
+					projection: "EPSG:4326"
 				});
-
-				baseLayer = new SuperMap.Layer.VWorldLayer("Base");
-				satelliteLayer = new SuperMap.Layer.VWorldLayer("영상");
-
-				baseLayer.url = ['http://xdworld.vworld.kr:8080/2d/Base/201310/${z}/${x}/${y}.png'];
-				satelliteLayer.url = ['http://xdworld.vworld.kr:8080/2d/Satellite/201301/${z}/${x}/${y}.jpeg'];			
-
-				map.addLayers([baseLayer, satelliteLayer]);
-				map.setCenter(new SuperMap.LonLat(14174150.9795765, 4495339.98139926), 9);
-
+				var points =[
+		             new SuperMap.Geometry.Point(124.61, 38.6111111111111),
+		             new SuperMap.Geometry.Point(131.872777777778, 38.6111111111111),
+		             new SuperMap.Geometry.Point(131.872777777778, 32.1227777777778),
+		             new SuperMap.Geometry.Point(124.61, 32.1227777777778)
+				],
+// 				var points =[
+// 		             new SuperMap.Geometry.Point(13730000, 4600000),
+// 		             new SuperMap.Geometry.Point(14800000, 4600000),
+// 		             new SuperMap.Geometry.Point(14800000, 3860000),
+// 		             new SuperMap.Geometry.Point(13730000, 3860000)
+// 				],
+				linearRings = new SuperMap.Geometry.LinearRing(points),
+				region = new SuperMap.Geometry.Polygon([linearRings]);
+				
+				var geometry = region.transform(
+				    	new SuperMap.Projection('EPSG:4326'), 
+				        new SuperMap.Projection('EPSG:5186')
+				    );
+				var t1 = new SuperMap.Geometry.Point(124.61, 32.1227777777778);
+				var t2 = new SuperMap.Geometry.Point(131.872777777778, 38.6111111111111);
+				console.log(t1.transform(new SuperMap.Projection('EPSG:4326'),new SuperMap.Projection('EPSG:5186')));
+				console.log(t2.transform(new SuperMap.Projection('EPSG:4326'),new SuperMap.Projection('EPSG:5186')));
+				baseLayer = new SuperMap.Layer.TiledDynamicRESTLayer(
+						"기본", "http://61.32.6.18:8091/iserver/services/map-Asiana/rest/maps/Asiana", 
+						{
+							transparent: true, 
+							cacheEnabled: false,
+							clipRegion : region
+						},{
+							maxResolution : "auto",
+							//projection: "EPSG:4326",
+							isBaseLayer :true
+						}
+	 				);	
+				
+				baseLayer.events.on({
+					"layerInitialized" : addLayer
+				});
+				function addLayer(){
+					///map.addLayer(baseLayer);
+					map.addLayers([baseLayer]);
+					map.setCenter(new SuperMap.LonLat(127, 38), 5);
+					//map.setCenter(new SuperMap.LonLat(14174150.9795765, 4495339.98139926), 6);
+				}
 			}
 		</script>
 	</head>

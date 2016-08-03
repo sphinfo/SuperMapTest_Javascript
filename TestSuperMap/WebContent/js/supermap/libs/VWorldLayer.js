@@ -56,18 +56,18 @@ SuperMap.Layer.VWorldLayer = SuperMap.Class(SuperMap.CanvasLayer, {
      * name - {String} Layer name
      */
     initialize: function(name, options) {
-    	var resolutionsArr = [
-    		                  2445.98, 1222.99, 611.50, 305.75, 
-    		                  152.87,  76.44,   38.22,  19.11,
-    		                  9.55,    4.78,    2.39,   1.19,
-    		                  0.60,    0.30,    0.15
-    		                 ] ;
-    	var scalesArr = [
-		                  8735665.08, 4367832.54, 2183916.27, 1091958.14, 
-		                  545979.07,  272989.53,  136494.77,  68247.38,
-		                  34123.69,   17061.85,   8530.92,    4265.46,
-		                  2132.73,    1066.37,    533.18
-		                 ] ;
+    	var resLen = 13;
+        var resStart = 0;
+    	var resolutionsArr = [] ;
+    	var scalesArr = [] ;
+    	var dpi = 95.99999999999984;
+        for(var i=resStart;i<=resLen;i++){
+            var res3857 = 2445.9849/Math.pow(2,i);
+            resolutionsArr.push(res3857);
+
+            var scale3857 = 0.0127/dpi/res3857;
+            scalesArr.push(scale3857);
+        }
         options = SuperMap.Util.extend({
             projection: "EPSG:3857",
             

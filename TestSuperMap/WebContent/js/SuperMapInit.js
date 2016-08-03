@@ -1,4 +1,4 @@
-
+var mapExtent = new SuperMap.Bounds(13730000, 3860000,14840000, 4680000);
 var superMapInit = {
 	featureCallBack  : {
 		over: function(currentFeature){
@@ -61,7 +61,9 @@ var superMapInit = {
 		map=superMapInit.map = new SuperMap.Map("map", {
 			units:"m",
 			numZoomLevels : 19,
-			allOverlays : true ,
+			//allOverlays : true ,
+			//restrictedExtent :mapExtent,
+			maxExtent : mapExtent,
 			controls : [
 				new SuperMap.Control.LayerSwitcher(), 
 				// 면적 
@@ -96,6 +98,16 @@ var superMapInit = {
 		superMapInit.map.addLayers([baseLayer, satelliteLayer,hybridLayer,imsangdo7c,vectorLayer,drawLayer,editLayer,searchLayer]);
 		superMapInit.map.setCenter(new SuperMap.LonLat(14174150.9795765, 4495339.98139926), 1);
 		superMapInit.getEditData();
+		var points =[
+		             new SuperMap.Geometry.Point(13730000,4600000),
+		             new SuperMap.Geometry.Point(14600000,4600000),
+		             new SuperMap.Geometry.Point(14600000,3860000),
+		             new SuperMap.Geometry.Point(13730000,3860000)
+				],
+				linearRings = new SuperMap.Geometry.LinearRing(points),
+				region = new SuperMap.Geometry.Polygon([linearRings]);
+				var transformedFeature = new SuperMap.Feature.Vector(region,null);
+				vectorLayer.addFeatures(transformedFeature);
 	},
 	controlerSetting : function(){
 		superMapInit.map.addControl(new SuperMap.Control.MousePosition());
@@ -157,24 +169,32 @@ var superMapInit = {
 	layerSetting : function(){
 		//Initialize the layer
 		//http://61.32.6.18:8090/iserver/services/online_vWorld/rest/maps/OSM
-		
-		baseLayer = new SuperMap.Layer.TiledDynamicRESTLayer(
-			"기본", "http://192.168.0.206:8090/iserver/services/vworld2d/rest/maps/OSM", 
-			{
-				transparent: true, 
-				cacheEnabled: false
-			},{
-				projection:'EPSG:3857',
-				scales :superMapInit.scales,
-				isBaseLayer :true
-			}
-		);
-		//baseLayer = new SuperMap.Layer.VWorldLayer("Base");
+		var points =[
+             new SuperMap.Geometry.Point(13730000,4600000),
+             new SuperMap.Geometry.Point(14800000,4600000),
+             new SuperMap.Geometry.Point(14800000,3860000)
+		],
+		linearRings = new SuperMap.Geometry.LinearRing(points),
+		region = new SuperMap.Geometry.Polygon([linearRings]);
+			
+//		baseLayer = new SuperMap.Layer.TiledDynamicRESTLayer(
+//			"기본", "http://192.168.0.206:8090/iserver/services/vworld2d/rest/maps/OSM", 
+//			{
+//				transparent: true, 
+//				cacheEnabled: false,
+//				clipRegion : region
+//			},{
+//				projection:'EPSG:3857',
+//				scales :superMapInit.scales,
+//				isBaseLayer :true
+//			}
+//		);
+		baseLayer = new SuperMap.Layer.VWorldLayer("Base");
 		satelliteLayer = new SuperMap.Layer.VWorldLayer("영상");
 		hybridLayer = new SuperMap.Layer.VWorldLayer("Hybrid");
 	
 		
-		//baseLayer.url = ['http://xdworld.vworld.kr:8080/2d/Base/201512/${z}/${x}/${y}.png'];
+		baseLayer.url = ['http://xdworld.vworld.kr:8080/2d/Base/201512/${z}/${x}/${y}.png'];
 		satelliteLayer.url = ['http://xdworld.vworld.kr:8080/2d/Satellite/201301/${z}/${x}/${y}.jpeg'];			
 		hybridLayer.url = ['http://xdworld.vworld.kr:8080/2d/Hybrid/201512/${z}/${x}/${y}.png'];	
 		hybridLayer.isBaseLayer = false;
@@ -192,15 +212,17 @@ var superMapInit = {
 		var url5 = "http://192.168.0.247:8090/iserver/services/map-Change_SuperMan/rest/maps/행정구역" ;
 		
 		//imsangdo7c = new SuperMap.Layer.WMS("Asiana",urlWms,{layers: "Asiana"});
-
+		
+		
 		imsangdo7c = new SuperMap.Layer.TiledDynamicRESTLayer(
 			"임상도 7c", url3, 
 			{
 				transparent: true, 
 				cacheEnabled: false,
+				clipRegion : region
 			},{
 				projection:'EPSG:3857',
-				scales :superMapInit.scales,
+				resolutions :baseLayer.resolutions,
 				isBaseLayer :false
 			}
 		);
@@ -459,9 +481,10 @@ var superMapInit = {
 			        new SuperMap.Projection('EPSG:900913')
 			    );
 				
-				console.log(geometry);
+				console.log(feature);
 				var transformedFeature = new SuperMap.Feature.Vector(geometry, feature.data);
 				searchLayer.addFeatures(transformedFeature);
+				
 			});
 			searchLayer.refresh();
 		}
@@ -586,6 +609,7 @@ function drawPointCompleted() {
 }
 function processCompleted(getFeaturesEventArgs) {
     var i, len, features, feature, result = getFeaturesEventArgs.result;
+    console.log(result);
     if (result && result.features) {
     	features = result.features
     	if(features.length>0){
