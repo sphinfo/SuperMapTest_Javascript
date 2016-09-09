@@ -31,7 +31,6 @@ public class Capture extends HttpServlet {
 		Runtime run = Runtime.getRuntime();
 		Process p = null;
 		BufferedReader br = null;
-		
 		Date date = new Date();
 		String htmlNm = String.valueOf(date.getTime());
 		String htmlFileNm = "D:/capture/" + htmlNm + ".html";
