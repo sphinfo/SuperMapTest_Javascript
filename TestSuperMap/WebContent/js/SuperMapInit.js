@@ -98,16 +98,6 @@ var superMapInit = {
 		superMapInit.map.addLayers([baseLayer, satelliteLayer,hybridLayer,imsangdo7c,vectorLayer,drawLayer,editLayer,searchLayer]);
 		superMapInit.map.setCenter(new SuperMap.LonLat(14174150.9795765, 4495339.98139926), 1);
 		superMapInit.getEditData();
-		var points =[
-		             new SuperMap.Geometry.Point(13730000,4600000),
-		             new SuperMap.Geometry.Point(14600000,4600000),
-		             new SuperMap.Geometry.Point(14600000,3860000),
-		             new SuperMap.Geometry.Point(13730000,3860000)
-				],
-				linearRings = new SuperMap.Geometry.LinearRing(points),
-				region = new SuperMap.Geometry.Polygon([linearRings]);
-				var transformedFeature = new SuperMap.Feature.Vector(region,null);
-				vectorLayer.addFeatures(transformedFeature);
 	},
 	controlerSetting : function(){
 		superMapInit.map.addControl(new SuperMap.Control.MousePosition());
@@ -312,8 +302,18 @@ var superMapInit = {
 		});
 		
 		$("#btnCapture").on("click",function(){
-			
-			MapToImg&&MapToImg.excute(map);
+			var size = map.getCurrentSize();
+			var mapViewPort = $("#map div:first-child");
+
+			var form = $("<form/>");
+			form.attr("target","_blank");
+			form.attr("action","capture");
+			form.attr("method","POST");
+			form.append($("<input type='hidden' name='width'/>").val(size.w));
+			form.append($("<input type='hidden' name='height'/>").val(size.h));
+			form.append($("<input type='hidden' name='html'/>").val(mapViewPort.children().html()));
+			form.submit();
+			//MapToImg&&MapToImg.excute(map);
 			
 //			var mapElem = document.getElementById('map'); // the id of your map div here
 //
