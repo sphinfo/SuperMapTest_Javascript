@@ -31,6 +31,12 @@ public class Capture extends HttpServlet {
 		Runtime run = Runtime.getRuntime();
 		Process p = null;
 		BufferedReader br = null;
+		
+		Date date = new Date();
+		String htmlNm = String.valueOf(date.getTime());
+		String htmlFileNm = "D:/capture/" + htmlNm + ".html";
+		String imageFileNm = "D:/capture/" + htmlNm + ".png";
+		
 		try {
 			String body = req.getParameter("html") == null ? "" : req
 					.getParameter("html");
@@ -48,10 +54,6 @@ public class Capture extends HttpServlet {
 			html.append("\n</body>\n");
 			html.append("</html>");
 
-			Date date = new Date();
-			String htmlNm = String.valueOf(date.getTime());
-			String htmlFileNm = "D:/capture/" + htmlNm + ".html";
-			String imageFileNm = "D:/capture/" + htmlNm + ".png";
 			fw = new FileWriter(htmlFileNm);
 			fw.write(html.toString());
 			fw.flush();
@@ -73,6 +75,7 @@ public class Capture extends HttpServlet {
 			p.waitFor();
 			br.close();
 			ServletContext ctx = getServletContext();
+			
 			download(req,resp,ctx,imageFileNm);
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -87,6 +90,14 @@ public class Capture extends HttpServlet {
 
 			if (p != null) {
 				p.destroy();
+			}
+			File htmlFile = new File(htmlFileNm);
+			File imgFile = new File(imageFileNm);
+			if(htmlFile.exists()){
+				htmlFile.delete();
+			}
+			if(imgFile.exists()){
+				imgFile.delete();
 			}
 		}
 
