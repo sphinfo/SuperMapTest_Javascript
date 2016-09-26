@@ -46,7 +46,7 @@ public class Capture extends HttpServlet {
 
 			StringBuffer html = new StringBuffer();
 			html.append("<html>\n");
-			html.append("<head></head>\n");
+			html.append("<head><meta charset=\"EUC-KR\"/></head>\n");
 			html.append("<body>\n");
 			html.append(body);
 			// html.append("<div style='width:100%;height:100%;background-color:#FEF112;'/>\n");

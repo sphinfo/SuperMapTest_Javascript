@@ -304,7 +304,29 @@ var superMapInit = {
 		$("#btnCapture").on("click",function(){
 			var size = map.getCurrentSize();
 			var mapViewPort = $("#map div:first-child");
-
+			var capturUrl = "http://61.32.6.18:18080/iserver/services/spatialanalyst-sample/restjsr/capture.json";
+			var restService = new SuperMap.ServiceBase(capturUrl+"?returnContent=true");
+			restService.isInTheSameDomain = true;
+			
+			var jsonParameters = SuperMap.Util.toJSON({
+				"width" :size.w,
+				"height" :size.h,
+				"html" :mapViewPort.children().html()
+			});
+			var option = {
+				method : "POST",
+				scope:this,
+				data :jsonParameters,//mapViewPort.children().children().html()
+				success : function(json){
+					var result = SuperMap.Util.transformResult(json);
+					console.log(result);
+				}
+			}
+			restService.request(option);
+			
+//			$.ajax({
+//				url:capturUrl,
+//			});
 			var form = $("<form/>");
 			form.attr("target","_blank");
 			form.attr("action","capture");
