@@ -75,6 +75,8 @@ SuperMap.Layer.VWorldLayer = SuperMap.Class(SuperMap.CanvasLayer, {
             resolutions :resolutionsArr,
             scales : scalesArr
         }, options);
+        options.useCORS=true;
+        console.log(options);
         SuperMap.CanvasLayer.prototype.initialize.apply(this,[name,this.url,{},options] );
     },
 
@@ -137,5 +139,49 @@ SuperMap.Layer.VWorldLayer = SuperMap.Class(SuperMap.CanvasLayer, {
         var url=urls[id];
         return url;
     },
+    addTile: function(bounds,position) {
+        // 修改Tile类 todo
+    	
+        if(this.useCanvas){
+        	var tile = new SuperMap.Tile.CanvasImage(this, position, bounds, null, this.tileSize, this.useCanvas);
+        	tile.loadTileImage=function(){
+        		var me = tile, 
+                image = new Image();
+        		image.firstInView = true;
+        		me.lastImage = image;
+        		
+        		var context = { 
+    	            image: image,
+    	            tile: me,
+    	            viewRequestID: me.layer.map.viewRequestID,
+    	            newImgTag: me.newImgTag
+    	            //bounds: me.bounds.clone()// todo: do we still need the bounds? guess no
+    	            //urls: this.layer.url.slice() // todo: for retries?
+    	        };
+        		var onLoadFunctionProxy = function() {
+                    if(this.tile.newImgTag === this.newImgTag){
+                        this.tile.onLoadFunction(this);    
+                    }
+                };
+                var onErrorFunctionProxy = function() {
+                    this.tile.onErrorFunction(this);
+                };
+                    
+                image.onload = SuperMap.Function.bind(onLoadFunctionProxy, context); 
+                image.onerror = SuperMap.Function.bind(onErrorFunctionProxy, context);
+                image.crossOrigin="anonymous";
+                image.src = me.url;
+        	};
+
+        	//tile.lastImage.crossOrigin="anonymous";
+        	return tile;
+        }else{
+            var tile = new this.tileClass(
+                this, position, bounds, null, this.tileSize, this.tileOptions
+            );
+            this.events.triggerEvent("addtile", {tile: tile});
+            return tile;
+        }
+    }
     //CLASS_NAME: "SuperMap.Layer.VWorldLayer"
 });

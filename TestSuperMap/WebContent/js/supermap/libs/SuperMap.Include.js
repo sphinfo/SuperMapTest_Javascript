@@ -36,7 +36,7 @@
     }
     //Loads the class library resource files
     function loadSMLibs() {
-        inputScript(baseurl+'SuperMap-7.1-11828.js');
+        inputScript(baseurl+'SuperMap-8.0.2-13626.js');
         inputScript(baseurl+'Button.js');
         inputScript(baseurl+'NavigationHistory.js');
         inputCSS('style.css');

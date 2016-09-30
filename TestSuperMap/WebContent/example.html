@@ -62,13 +62,17 @@ div {
 <script type="text/javascript" src="js/jquery-1.12.3.js"></script>
 <script type="text/javascript" src="js/bootstrap.js"></script>
 <script type="text/javascript" src="js/jquery-ui.js"></script>
+<script type="text/javascript" src="js/jquery.fileDownload.js"></script>
+
 <!--[if lte IE 9]>
 	<script type="text/javascript" src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
 	<script type="text/javascript" src="js/supermap/libs/excanvas.js"></script>
 <![endif]-->
-
 <script type="text/javascript" src="js/supermap/libs/html2canvas.js"></script>
+<!--[if lte IE 8]>
+
 <script type="text/javascript" src="js/supermap/libs/html2canvas.svg.js"></script>
+<![endif]-->
 <!-- <script type="text/javascript" src="js/supermap/libs/canvas2image.js"></script> -->
 <script type="text/javascript" src="js/supermap/libs/MapToImae.js"></script>
 <script type="text/javascript" src="js/spectrum.js"></script>
@@ -359,6 +363,21 @@ $(document).ready(function() {
 	    preferredFormat: "hex",
 	    localStorageKey: "spectrum.fill"
 	});
+	
+	// 도형 설정 팝업 설정
+	$("#printPopup").dialog({
+		autoOpen: false,
+		resizable: false,
+		width : 450,
+		height : 600,
+		open : function(evt){
+			
+			
+		},
+		close : function(){
+			
+		}
+	});
 
 });
 
@@ -379,6 +398,7 @@ $(document).ready(function() {
 		<a id="btnTrash" class="btn btn-info btn-xs">삭제</a>
 		<a id="btnPopup" class="btn btn-info btn-xs">팝업</a>
 		<a id="btnCapture" class="btn btn-info btn-xs">캡쳐</a>
+		<a id="btnPrintPopup" class="btn btn-info btn-xs">출력</a>
 		<a id="btnDraw" class="btn btn-info btn-xs">그리기</a>
 		<div id="drawPanel">
 			<a id="btnTextLine" class="btn btn-info btn-xs">텍스트</a>
@@ -448,6 +468,30 @@ $(document).ready(function() {
 					<input class="col-xs-2" type="text" id="fillOpacity"/>
 				</div>
 			</div>
+		</div>
+	</div>
+	<div id="printPopup" title="출력">
+		<div id="printSetting" class="row mainRow" >
+			<div class="col-xs-2">사이즈</div>
+			<div class="col-xs-3">
+				<select id="printPageSize">
+					<option value="A4">A4</option>
+					<option value="A3">A3</option>
+				</select>
+			</div>
+			<div class="col-xs-2">방향</div>
+			<div class="col-xs-3">
+				<select id="printOrientation">
+					<option value="Portrait">세로</option>
+					<option value="Landscape">가로</option>
+				</select>
+			</div>
+			<div class="col-xs-2">
+				<a id="btnPrint" class="btn btn-info btn-xs">출력</a>	
+			</div>
+		</div>
+		<div id="printView" class="row mainRow" >
+			
 		</div>
 	</div>
 </body>

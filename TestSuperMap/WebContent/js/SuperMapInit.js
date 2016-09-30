@@ -184,15 +184,15 @@ var superMapInit = {
 		hybridLayer = new SuperMap.Layer.VWorldLayer("Hybrid");
 	
 		
-		baseLayer.url = ['http://xdworld.vworld.kr:8080/2d/Base/201512/${z}/${x}/${y}.png'];
-		satelliteLayer.url = ['http://xdworld.vworld.kr:8080/2d/Satellite/201301/${z}/${x}/${y}.jpeg'];			
-		hybridLayer.url = ['http://xdworld.vworld.kr:8080/2d/Hybrid/201512/${z}/${x}/${y}.png'];	
+		baseLayer.url = ['http://61.32.6.18:18080/2d/Base/201512/${z}/${x}/${y}.png'];
+		satelliteLayer.url = ['http://61.32.6.18:18080/2d/Satellite/201301/${z}/${x}/${y}.jpeg'];			
+		hybridLayer.url = ['http://61.32.6.18:18080/2d/Hybrid/201512/${z}/${x}/${y}.png'];	
 		hybridLayer.isBaseLayer = false;
 		
 		baseLayer.useCORS = true;
 		satelliteLayer.useCORS = true;
 		hybridLayer.useCORS = true;
-		baseLayer.useCanvas = false;
+		//baseLayer.useCanvas = false;
 		
 		//iServer8c
 		var url2 = "http://61.32.6.18:8091/iserver/services/map-vWorld_Test/rest/maps/SGG_5186";
@@ -217,7 +217,7 @@ var superMapInit = {
 			}
 		);
 		imsangdo7c.useCORS = true;
-		imsangdo7c.useCanvas = false;
+		//imsangdo7c.useCanvas = false;
 //		imsangdo8c = new SuperMap.Layer.TiledDynamicRESTLayer(
 //			"임상도 8c", url2, 
 //			{
@@ -302,57 +302,103 @@ var superMapInit = {
 		});
 		
 		$("#btnCapture").on("click",function(){
+			var host = "http://127.0.0.1:8090/iserver";
 			var size = map.getCurrentSize();
 			var mapViewPort = $("#map div:first-child");
-			var capturUrl = "http://61.32.6.18:18080/iserver/services/spatialanalyst-sample/restjsr/capture.json";
-			var restService = new SuperMap.ServiceBase(capturUrl+"?returnContent=true");
-			restService.isInTheSameDomain = true;
 			
 			var jsonParameters = SuperMap.Util.toJSON({
 				"width" :size.w,
 				"height" :size.h,
 				"html" :mapViewPort.children().html()
 			});
-			var option = {
-				method : "POST",
-				scope:this,
-				data :jsonParameters,//mapViewPort.children().children().html()
-				success : function(json){
-					var result = SuperMap.Util.transformResult(json);
-					console.log(result);
-				}
-			}
-			restService.request(option);
-			
-//			$.ajax({
-//				url:capturUrl,
+//			getServerResource("capture",jsonParameters,function(json){
+//				var result = SuperMap.Util.transformResult(json);
+//				var link = document.createElement('a');
+//				link.href = host+"/"+result.path;
+//				link.download = 'Download.png';
+//				link.target= "_blank";
+//				document.body.appendChild(link);
+//				link.click();
+//				link.remove();
 //			});
-			var form = $("<form/>");
-			form.attr("target","_blank");
-			form.attr("action","capture");
-			form.attr("method","POST");
-			form.append($("<input type='hidden' name='width'/>").val(size.w));
-			form.append($("<input type='hidden' name='height'/>").val(size.h));
-			form.append($("<input type='hidden' name='html'/>").val(mapViewPort.children().html()));
-			form.submit();
+			
 			//MapToImg&&MapToImg.excute(map);
 			
-//			var mapElem = document.getElementById('map'); // the id of your map div here
+			var mapElem = mapViewPort.children()[0]; // the id of your map div here
 //
-//	        html2canvas(mapElem, {
-//	          useCORS: true,
-//	          onrendered: function(canvas) {
-//	             mapImg = canvas.toDataURL('image/png');
-//	             console.log(mapImg);
-//	            // reset the map to original styling
-//
-//	            // do something here with your mapImg
-//	            // e.g. I then use the dataURL in a pdf using jsPDF...
-//	            // createPDFObject();
-//	          }
-//	        });
+	        html2canvas(mapElem, {
+	          useCORS: true,
+	          onrendered: function(canvas) {
+	        	 
+	             mapImg = canvas.toDataURL('image/png');
+	             var jsonCanvasParameters = SuperMap.Util.toJSON({
+	 				"width" :size.w,
+	 				"height" :size.h,
+	 				"html" :"<img src='"+mapImg+"'/>"
+	 			});
+	            getServerResource("capture",jsonCanvasParameters,function(json){
+	            	var host = "http://127.0.0.1:8090/iserver";
+	            	var result = SuperMap.Util.transformResult(json);
+	 				var link = document.createElement('a');
+	 				console.log(host+"/"+result.path);
+	 				link.href = host+"/"+result.path;
+	 				link.download = 'Download.png';
+	 				link.target= "_blank";
+	 				document.body.appendChild(link);
+	 				link.click();
+	 				link.remove();
+	 				
+	 			});
+	          }
+	        });
+		});
+		$("#btnPrintPopup").on("click",function(){
+			$("#printPopup").dialog("open");
 		});
 		
+		$("#btnPrint").on("click",function(){
+			var host = "http://127.0.0.1:8090/iserver";
+			var size = map.getCurrentSize();
+			var mapViewPort = $("#map div:first-child");
+			
+//			var jsonParameters = SuperMap.Util.toJSON({
+//				"width" :size.w,
+//				"height" :size.h,
+//				"html" :mapViewPort.children().html(),
+//				"pageSize": $("#printPageSize").val(),
+//				"orientation": $("#printOrientation").val()
+//			});
+//			getServerResource("print",jsonParameters,function(json){
+//				var result = SuperMap.Util.transformResult(json);
+//				$("#printView").empty();
+//				$("<iframe></iframe>")
+//					.attr("src",host+"/"+result.path)
+//					.appendTo($("#printView"));
+//			});
+			
+			var mapElem = mapViewPort.children()[0]; // the id of your map div here
+	        html2canvas(mapElem, {
+	          useCORS: true,
+	          onrendered: function(canvas) {
+	        	 mapImg = canvas.toDataURL('image/png');
+	        	  var jsonCanvasParameters = SuperMap.Util.toJSON({
+					"width" :size.w,
+					"height" :size.h,
+					"html" :"<img src='"+mapImg+"'/>",
+					"pageSize": $("#printPageSize").val(),
+					"orientation": $("#printOrientation").val()
+	        	  });
+	            getServerResource("print",jsonCanvasParameters,function(json){
+					var result = SuperMap.Util.transformResult(json);
+					$("#printView").empty();
+					$("<iframe width='450' height='400'></iframe>")
+						.attr("src",host+"/"+result.path)
+						.appendTo($("#printView"));
+	 				
+	 			});
+	          }
+	        });
+		});
 		// Anchored 팝업 offset 설정 (REQ-0006)
 		$("#btnPopup").on("click",function(){
 			var contentHTML = "<div style='width:80px; border-width:2px; border-style:solid; border-color:red;font-size:12px; opacity: 0.8'>";
@@ -647,4 +693,18 @@ function processCompleted(getFeaturesEventArgs) {
     }else {
     	alert("No Result");
     }
+}
+
+function getServerResource(type,jsonParameters,callback){
+	var host = "http://127.0.0.1:8090/iserver";
+	var capturUrl = host+"/services/spatialanalyst-sample/restjsr/"+type+".jsonp";
+	var restService = new SuperMap.ServiceBase(capturUrl+"?returnContent=true");
+	restService.isInTheSameDomain = false;
+	var option = {
+		method : "POST",
+		scope:this,
+		data :jsonParameters,//mapViewPort.children().children().html()
+		success :callback
+	}
+	restService.request(option);
 }
