@@ -1,5 +1,5 @@
 SmEdit = {
-	editDataUrl : "http://61.32.6.18:8090/iserver/services/data-edit_test/rest/data",
+	editDataUrl : "http://61.32.6.18:9090/iserver/services/data-Change_SuperMan/rest/data",
 	control : function (){
 		editFeature = new SuperMap.Control.SelectFeature(searchLayer,{
 			toggle : true,
