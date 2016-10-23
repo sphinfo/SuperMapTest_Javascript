@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>VWORLD Version Test</title>
+<link href="css/bootstrap.css" rel="stylesheet">
+<style type="text/css">
+body {
+	margin: 0;
+	overflow: hidden;
+	background: #fff;
+}
+
+#map {
+	position: relative;
+	height: 553px;
+	border: 1px solid #3473b7;
+}
+
+</style>
+
+<script type="text/javascript" src="js/supermap/libs/SuperMap.Include.js"></script>
+<script type="text/javascript" src="js/supermap/libs/VWorldLayer.js"></script>
+
+<script type="text/javascript" src="js/jquery-1.12.3.js"></script>
+<script type="text/javascript" src="js/bootstrap.js"></script>
+<script type="text/javascript">
+var map,vm800,vm802;
+var iserver800 = 'http://61.32.6.18:8091/iserver/services/vworld/rest/maps/OSM';
+
+var iserver802 = 'http://localhost:8090/iserver/services/vworld/rest/maps/OSM';
+var wms3;
+$(document).ready(function() {
+	map = new SuperMap.Map("map", {
+		units:"m",
+		numZoomLevels : 17,
+		fractionalZoom: true,
+		controls : [ 
+			new SuperMap.Control.Navigation(),
+		    new SuperMap.Control.LayerSwitcher(), 
+			new SuperMap.Control.Zoom() 
+		]
+	});
+	
+	vm800 = new SuperMap.Layer.TiledDynamicRESTLayer("Sumper Map 8.0.0", iserver800, {
+			transparent: true, 
+			cacheEnabled: false
+		}, {
+			maxResolution : "auto"
+	});
+	vm802 = new SuperMap.Layer.TiledDynamicRESTLayer("Sumper Map 8.0.2", iserver802, {
+			transparent: true, 
+			cacheEnabled: false
+		}, {
+			//maxResolution : "auto"
+	});
+	wms3= new SuperMap.Layer.WMS("WMS3", "http://localhost:8090/iserver/services/vworld/wms130", 
+			{ layers: "OSM", version: '1.3.0' }, 
+			{
+				projection:"EPSG:3857",
+				maxExtent: new SuperMap.Bounds(-20037508.34 , -20037508.34,20037508.34 , 20037508.34 )
+			});
+	vm800.events.on({
+		"layerInitialized" : addLayer800,
+		"moveend" : function(evt){
+			if(evt.zoomChanged){
+				console.log(map.getZoom()+":"+vm802.scale);
+			}
+			
+		}
+	});
+	vm802.events.on({
+		"layerInitialized" : addLayer802,
+		"moveend" : function(evt){
+			if(evt.zoomChanged){
+				console.log(map.getZoom()+":"+vm802.scale);
+			}
+			
+		}
+	});
+	function addLayer800() {
+		map.addLayers([vm800]);
+		console.log(vm800);
+		map.setCenter(new SuperMap.LonLat(14174150.9795765, 4495339.98139926), 7);
+	}
+	function addLayer802() {
+		map.addLayers([vm802,wms3]);
+		map.setCenter(new SuperMap.LonLat(14174150.9795765, 4495339.98139926), 7);
+	}
+});
+
+</script>
+</head>
+<body>
+	<div id="map"></div>
+</body>
+</html>

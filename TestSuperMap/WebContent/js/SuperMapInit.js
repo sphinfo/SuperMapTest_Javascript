@@ -167,35 +167,35 @@ var superMapInit = {
 		linearRings = new SuperMap.Geometry.LinearRing(points),
 		region = new SuperMap.Geometry.Polygon([linearRings]);
 			
-//		baseLayer = new SuperMap.Layer.TiledDynamicRESTLayer(
-//			"기본", "http://192.168.0.206:8090/iserver/services/vworld2d/rest/maps/OSM", 
-//			{
-//				transparent: true, 
-//				cacheEnabled: false,
-//				clipRegion : region
-//			},{
-//				projection:'EPSG:3857',
-//				scales :superMapInit.scales,
-//				isBaseLayer :true
-//			}
-//		);
-		baseLayer = new SuperMap.Layer.VWorldLayer("Base");
+		baseLayer = new SuperMap.Layer.TiledDynamicRESTLayer(
+			"기본", "http://61.32.6.18:9090/iserver/services/vworld/rest/maps/OSM", 
+			{
+				transparent: true, 
+				cacheEnabled: false,
+				clipRegion : region
+			},{
+				projection:'EPSG:3857',
+				scales :superMapInit.scales,
+				isBaseLayer :true
+			}
+		);
+		//baseLayer = new SuperMap.Layer.VWorldLayer("Base");
 		satelliteLayer = new SuperMap.Layer.VWorldLayer("영상");
 		hybridLayer = new SuperMap.Layer.VWorldLayer("Hybrid");
 	
 		
-		baseLayer.url = ['http://61.32.6.18:18080/2d/Base/201512/${z}/${x}/${y}.png'];
+		//baseLayer.url = ['http://61.32.6.18:18080/2d/Base/201512/${z}/${x}/${y}.png'];
 		satelliteLayer.url = ['http://61.32.6.18:18080/2d/Satellite/201301/${z}/${x}/${y}.jpeg'];			
 		hybridLayer.url = ['http://61.32.6.18:18080/2d/Hybrid/201512/${z}/${x}/${y}.png'];	
 		hybridLayer.isBaseLayer = false;
 		
-		baseLayer.useCORS = true;
+		//baseLayer.useCORS = true;
 		satelliteLayer.useCORS = true;
 		hybridLayer.useCORS = true;
 		//baseLayer.useCanvas = false;
 		
 		//iServer8c
-		var url2 = "http://61.32.6.18:8091/iserver/services/map-vWorld_Test/rest/maps/SGG_5186";
+		var url2 = "http://61.32.6.18:9090/iserver/services/map-Change_SuperMan/rest/maps/도시가스지도";
 		var urlWms = "http://61.32.6.18:8090/iserver/services/map-edit_test/rest/maps/test_point@test5186";
 		//iServer7c
 		var url3 = "http://61.32.6.18:8090/iserver/services/map-im5000/rest/maps/Dynamic_IM5000";
@@ -205,14 +205,13 @@ var superMapInit = {
 		
 		
 		imsangdo7c = new SuperMap.Layer.TiledDynamicRESTLayer(
-			"임상도 7c", url3, 
+			"임상도 7c", url2, 
 			{
 				transparent: true, 
-				cacheEnabled: false,
-				clipRegion : region
+				cacheEnabled: false
 			},{
-				projection:'EPSG:3857',
-				resolutions :baseLayer.resolutions,
+				//projection:'EPSG:3857',
+				resolutions :satelliteLayer.resolutions,
 				isBaseLayer :false
 			}
 		);
@@ -306,11 +305,11 @@ var superMapInit = {
 			var size = map.getCurrentSize();
 			var mapViewPort = $("#map div:first-child");
 			
-			var jsonParameters = SuperMap.Util.toJSON({
-				"width" :size.w,
-				"height" :size.h,
-				"html" :mapViewPort.children().html()
-			});
+//			var jsonParameters = SuperMap.Util.toJSON({
+//				"width" :size.w,
+//				"height" :size.h,
+//				"html" :mapViewPort.children().html()
+//			});
 //			getServerResource("capture",jsonParameters,function(json){
 //				var result = SuperMap.Util.transformResult(json);
 //				var link = document.createElement('a');
@@ -326,31 +325,31 @@ var superMapInit = {
 			
 			var mapElem = mapViewPort.children()[0]; // the id of your map div here
 //
-	        html2canvas(mapElem, {
-	          useCORS: true,
-	          onrendered: function(canvas) {
-	        	 
-	             mapImg = canvas.toDataURL('image/png');
-	             var jsonCanvasParameters = SuperMap.Util.toJSON({
-	 				"width" :size.w,
-	 				"height" :size.h,
-	 				"html" :"<img src='"+mapImg+"'/>"
-	 			});
-	            getServerResource("capture",jsonCanvasParameters,function(json){
-	            	var host = "http://127.0.0.1:8090/iserver";
-	            	var result = SuperMap.Util.transformResult(json);
-	 				var link = document.createElement('a');
-	 				console.log(host+"/"+result.path);
-	 				link.href = host+"/"+result.path;
-	 				link.download = 'Download.png';
-	 				link.target= "_blank";
-	 				document.body.appendChild(link);
-	 				link.click();
-	 				link.remove();
-	 				
-	 			});
-	          }
-	        });
+//	        html2canvas(mapElem, {
+//	          useCORS: true,
+//	          onrendered: function(canvas) {
+//	        	 
+//	             mapImg = canvas.toDataURL('image/png');
+//	             var jsonCanvasParameters = SuperMap.Util.toJSON({
+//	 				"width" :size.w,
+//	 				"height" :size.h,
+//	 				"html" :"<img src='"+mapImg+"'/>"
+//	 			});
+//	            getServerResource("capture",jsonCanvasParameters,function(json){
+//	            	var host = "http://127.0.0.1:8090/iserver";
+//	            	var result = SuperMap.Util.transformResult(json);
+//	 				var link = document.createElement('a');
+//	 				console.log(host+"/"+result.path);
+//	 				link.href = host+"/"+result.path;
+//	 				link.download = 'Download.png';
+//	 				link.target= "_blank";
+//	 				document.body.appendChild(link);
+//	 				link.click();
+//	 				link.remove();
+//	 				
+//	 			});
+//	          }
+//	        });
 		});
 		$("#btnPrintPopup").on("click",function(){
 			$("#printPopup").dialog("open");
@@ -361,6 +360,61 @@ var superMapInit = {
 			var size = map.getCurrentSize();
 			var mapViewPort = $("#map div:first-child");
 			
+			console.log(map.getExtent());
+			var layers = map.layers;
+			var layerInfos = [];
+			$.each(layers,function(idx,layer){
+				if(layer.getVisibility()){
+					var pLayer = {};
+					if(layer.CLASS_NAME == "SuperMap.Layer.TiledDynamicRESTLayer"){
+						pLayer.type = "REST";
+						pLayer.url = layer.url;
+						console.log(layer.url);
+						layerInfos.push(pLayer);
+					}else if(layer.CLASS_NAME == "SuperMap.Layer.Vector"){
+						console.log(layer.style);
+						if(layer.features.length>0){
+							pLayer.type = "VECTOR";
+							var isSingleStyle= false;
+							
+							//console.log(layer.styleMap.styles.default.rules[0].symbolizer);
+							//var styleMap = layer.styleMap.styles.default.rules[0].symbolizer;
+							var styleMapRules = layer.styleMap.styles.default.rules;
+							
+							pLayer.features = [];
+							$.each(layer.features,function(idx,feature){
+								if(feature.geometry.CLASS_NAME=="SuperMap.Geometry.Point"){
+									
+								}else if(feature.geometry.CLASS_NAME=="SuperMap.Geometry.LineString"){
+									
+								}else if(feature.geometry.CLASS_NAME=="SuperMap.Geometry.Polygon"){
+									
+								} else if (feature.geometry.CLASS_NAME=="SuperMap.Geometry.MultiPolygon"){
+									
+								}
+							});
+							//pLayer.features = layer.features;
+							//layerInfos.push(pLayer);
+						}
+						
+					}
+					
+				}
+			});
+			var jsonParameters = SuperMap.Util.toJSON({
+				"imgInfo" : {
+					"pageSize": $("#printPageSize").val(),
+					"orientation": $("#printOrientation").val(),
+					"extent":map.getExtent(),
+					"sacle":map.getScale()
+				},
+				"layerInfos" :layerInfos
+			});
+			console.log(jsonParameters);
+			//getServerResource("print",jsonParameters,function(json){
+				
+				
+			//});
 //			var jsonParameters = SuperMap.Util.toJSON({
 //				"width" :size.w,
 //				"height" :size.h,
@@ -376,28 +430,28 @@ var superMapInit = {
 //					.appendTo($("#printView"));
 //			});
 			
-			var mapElem = mapViewPort.children()[0]; // the id of your map div here
-	        html2canvas(mapElem, {
-	          useCORS: true,
-	          onrendered: function(canvas) {
-	        	 mapImg = canvas.toDataURL('image/png');
-	        	  var jsonCanvasParameters = SuperMap.Util.toJSON({
-					"width" :size.w,
-					"height" :size.h,
-					"html" :"<img src='"+mapImg+"'/>",
-					"pageSize": $("#printPageSize").val(),
-					"orientation": $("#printOrientation").val()
-	        	  });
-	            getServerResource("print",jsonCanvasParameters,function(json){
-					var result = SuperMap.Util.transformResult(json);
-					$("#printView").empty();
-					$("<iframe width='450' height='400'></iframe>")
-						.attr("src",host+"/"+result.path)
-						.appendTo($("#printView"));
-	 				
-	 			});
-	          }
-	        });
+//			var mapElem = mapViewPort.children()[0]; // the id of your map div here
+//	        html2canvas(mapElem, {
+//	          useCORS: true,
+//	          onrendered: function(canvas) {
+//	        	 mapImg = canvas.toDataURL('image/png');
+//	        	  var jsonCanvasParameters = SuperMap.Util.toJSON({
+//					"width" :size.w,
+//					"height" :size.h,
+//					"html" :"<img src='"+mapImg+"'/>",
+//					"pageSize": $("#printPageSize").val(),
+//					"orientation": $("#printOrientation").val()
+//	        	  });
+//	            getServerResource("print",jsonCanvasParameters,function(json){
+//					var result = SuperMap.Util.transformResult(json);
+//					$("#printView").empty();
+//					$("<iframe width='450' height='400'></iframe>")
+//						.attr("src",host+"/"+result.path)
+//						.appendTo($("#printView"));
+//	 				
+//	 			});
+//	          }
+//	        });
 		});
 		// Anchored 팝업 offset 설정 (REQ-0006)
 		$("#btnPopup").on("click",function(){
@@ -529,7 +583,7 @@ var superMapInit = {
 		});
 		getFeatureBySQLParams = new SuperMap.REST.GetFeaturesBySQLParameters({
 			queryParameter: getFeatureParam,
-			datasetNames:["test5186:test_point","test5186:test_line","test5186:test_polygon"]
+			datasetNames:["PostgreSQL:Point","PostgreSQL:Line","PostgreSQL:Polygon"]
 		});
 		getFeatureBySQLService = new SuperMap.REST.GetFeaturesBySQLService(editUrl, {
 		eventListeners: {"processCompleted": superMapInit.editDataCompleted, "processFailed": superMapInit.processFailed}});
@@ -544,14 +598,14 @@ var superMapInit = {
 		if (result && result.features) {
 			$.each(result.features,function(idx,feature){
 				
-				var geometry = feature.geometry.transform(
-			    	new SuperMap.Projection('EPSG:5186'), 
-			        new SuperMap.Projection('EPSG:900913')
-			    );
-				
-				console.log(feature);
-				var transformedFeature = new SuperMap.Feature.Vector(geometry, feature.data);
-				searchLayer.addFeatures(transformedFeature);
+//				var geometry = feature.geometry.transform(
+//			    	new SuperMap.Projection('EPSG:5186'), 
+//			        new SuperMap.Projection('EPSG:900913')
+//			    );
+//				
+//				console.log(feature);
+//				var transformedFeature = new SuperMap.Feature.Vector(geometry, feature.data);
+				searchLayer.addFeatures(feature);
 				
 			});
 			searchLayer.refresh();
@@ -652,22 +706,31 @@ var superMapInit = {
 			});
 		}
 	},
+	queryResult2 :function(){
+		
+	}
+	
 	
 };
 
 function drawPointCompleted() {
 	var mapCenter = map.getCenter();
     var geometry = new SuperMap.Geometry.Point(mapCenter.lon, mapCenter.lat);
+    geometry = geometry.transform(
+    	new SuperMap.Projection('EPSG:900913'), 
+        new SuperMap.Projection('EPSG:4326')
+    );
     vectorLayer.removeAllFeatures();
     var getFeaturesByGeometryParameters, getFeaturesByGeometryService;
     getFeaturesByGeometryParameters = new SuperMap.REST.GetFeaturesByGeometryParameters({
         datasetNames: ["PostgreSQL:TL_SPBD_BULD"],
+        fields : ["RN_CD"],
         toIndex:-1,
         spatialQueryMode:SuperMap.REST.SpatialQueryMode.INTERSECT,
         geometry: geometry
     });
     getFeaturesByGeometryService = new SuperMap.REST.GetFeaturesByGeometryService(
-            		"http://192.168.0.247:8090/iserver/services/data-Change_SuperMan/rest/data", {
+            		"http://192.168.0.78:9090/iserver/services/data-Change_SuperMan/rest/data", {
         eventListeners: {
             "processCompleted": processCompleted,
             "processFailed": superMapInit.processFailed
@@ -697,9 +760,9 @@ function processCompleted(getFeaturesEventArgs) {
 
 function getServerResource(type,jsonParameters,callback){
 	var host = "http://127.0.0.1:8090/iserver";
-	var capturUrl = host+"/services/spatialanalyst-sample/restjsr/"+type+".jsonp";
+	var capturUrl = host+"/services/spatialanalyst-sample/restjsr/getImage.json";
 	var restService = new SuperMap.ServiceBase(capturUrl+"?returnContent=true");
-	restService.isInTheSameDomain = false;
+	restService.isInTheSameDomain = true;
 	var option = {
 		method : "POST",
 		scope:this,
