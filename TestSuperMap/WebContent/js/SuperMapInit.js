@@ -171,8 +171,7 @@ var superMapInit = {
 			"기본", "http://61.32.6.18:9090/iserver/services/vworld/rest/maps/OSM", 
 			{
 				transparent: true, 
-				cacheEnabled: false,
-				clipRegion : region
+				cacheEnabled: false
 			},{
 				projection:'EPSG:3857',
 				scales :superMapInit.scales,
@@ -185,7 +184,7 @@ var superMapInit = {
 	
 		
 		//baseLayer.url = ['http://61.32.6.18:18080/2d/Base/201512/${z}/${x}/${y}.png'];
-		satelliteLayer.url = ['http://61.32.6.18:18080/2d/Satellite/201301/${z}/${x}/${y}.jpeg'];			
+		satelliteLayer.url = ['http://61.32.6.18:18080/2d/Satellite/201512/${z}/${x}/${y}.jpeg'];			
 		hybridLayer.url = ['http://61.32.6.18:18080/2d/Hybrid/201512/${z}/${x}/${y}.png'];	
 		hybridLayer.isBaseLayer = false;
 		
@@ -208,7 +207,8 @@ var superMapInit = {
 			"임상도 7c", url2, 
 			{
 				transparent: true, 
-				cacheEnabled: false
+				cacheEnabled: false,
+				layersID : "[0:0]"
 			},{
 				//projection:'EPSG:3857',
 				resolutions :satelliteLayer.resolutions,
@@ -369,52 +369,78 @@ var superMapInit = {
 					if(layer.CLASS_NAME == "SuperMap.Layer.TiledDynamicRESTLayer"){
 						pLayer.type = "REST";
 						pLayer.url = layer.url;
-						console.log(layer.url);
+						pLayer.layersID = layer.params.layersID;
+						console.log(pLayer.layersID);
 						layerInfos.push(pLayer);
 					}else if(layer.CLASS_NAME == "SuperMap.Layer.Vector"){
 						console.log(layer.style);
 						if(layer.features.length>0){
 							pLayer.type = "VECTOR";
-							var isSingleStyle= false;
+							var style = null ;
 							
+							if(layer.style !=null){
+								style = layer.style;
+							} 
+							var styleMapRules = layer.styleMap.styles.default.rules;
 							//console.log(layer.styleMap.styles.default.rules[0].symbolizer);
 							//var styleMap = layer.styleMap.styles.default.rules[0].symbolizer;
-							var styleMapRules = layer.styleMap.styles.default.rules;
+							console.log(styleMapRules);
 							
 							pLayer.features = [];
 							$.each(layer.features,function(idx,feature){
-								if(feature.geometry.CLASS_NAME=="SuperMap.Geometry.Point"){
-									
-								}else if(feature.geometry.CLASS_NAME=="SuperMap.Geometry.LineString"){
-									
-								}else if(feature.geometry.CLASS_NAME=="SuperMap.Geometry.Polygon"){
-									
-								} else if (feature.geometry.CLASS_NAME=="SuperMap.Geometry.MultiPolygon"){
-									
+								var serverGeom={};
+								var pFeature = {};
+								if(feature.geometry.text != undefined){
+									serverGeom.parts = [1];
+									serverGeom.points = [{x:feature.geometry.x,y:feature.geometry.y}];
+									serverGeom.type= "TEXT";
+									serverGeom.text = feature.geometry.text;
+									pFeature.geometry = serverGeom;
+								}else {
+									serverGeom = SuperMap.REST.ServerGeometry.fromGeometry(feature.geometry);
+									pFeature.geometry = serverGeom;
 								}
+								if(feature.style != null){
+									pFeature.style = feature.style;
+								} else if(style != null){
+									pFeature.style = style;
+								} else if(styleMapRules.length>0){
+									symbolizer = styleMapRules[0].symbolizer;
+									if(serverGeom.type=="POINT"){
+										pFeature.style = symbolizer["Point"];
+									} else if(serverGeom.type=="LINE"){
+										pFeature.style = symbolizer["Line"];
+									} else if(serverGeom.type=="REGION"){
+										pFeature.style = symbolizer["Polygon"];
+									}
+								}
+								
+								pLayer.features.push(pFeature);
 							});
 							//pLayer.features = layer.features;
-							//layerInfos.push(pLayer);
+							layerInfos.push(pLayer);
 						}
 						
 					}
 					
 				}
 			});
+			var pageSize = $("#printPageSize").val();
 			var jsonParameters = SuperMap.Util.toJSON({
 				"imgInfo" : {
 					"pageSize": $("#printPageSize").val(),
-					"orientation": $("#printOrientation").val(),
+					"orientation": pageSize,
 					"extent":map.getExtent(),
 					"sacle":map.getScale()
 				},
 				"layerInfos" :layerInfos
 			});
 			console.log(jsonParameters);
-			//getServerResource("print",jsonParameters,function(json){
-				
-				
-			//});
+			getServerResource("print",jsonParameters,function(json){
+				var result = SuperMap.Util.transformResult(json);
+				var url="print.jsp?imgUrl="+host+"/"+result.path+"&pageSize="+pageSize;
+				var newWindow = window.open(url, "newWindow", "height=600, width=800, resizable=yes");
+			});
 //			var jsonParameters = SuperMap.Util.toJSON({
 //				"width" :size.w,
 //				"height" :size.h,
@@ -605,7 +631,9 @@ var superMapInit = {
 //				
 //				console.log(feature);
 //				var transformedFeature = new SuperMap.Feature.Vector(geometry, feature.data);
-				searchLayer.addFeatures(feature);
+				var test = feature.clone();
+				console.log(test);
+				searchLayer.addFeatures(feature.clone());
 				
 			});
 			searchLayer.refresh();
