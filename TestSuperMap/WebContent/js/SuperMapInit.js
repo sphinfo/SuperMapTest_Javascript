@@ -385,14 +385,16 @@ var superMapInit = {
 							$.each(layer.features,function(idx,feature){
 								var serverGeom={};
 								var pFeature = {};
-								var geometry = feature.geometry.transform(new SuperMap.Projection('EPSG:3857'), new SuperMap.Projection('EPSG:4326'));
 								if(feature.geometry.text != undefined){
+									var point = new SuperMap.LonLat(feature.geometry.x,feature.geometry.y);
+									point = point.transform(new SuperMap.Projection('EPSG:3857'), new SuperMap.Projection('EPSG:4326'));
 									serverGeom.parts = [1];
-									serverGeom.points = [{x:geometry.x,y:geometry.y}];
+									serverGeom.points = [{x:point.x,y:point.y}];
 									serverGeom.type= "TEXT";
 									serverGeom.text = feature.geometry.text;
 									pFeature.geometry = serverGeom;
 								}else {
+									var geometry = feature.geometry.transform(new SuperMap.Projection('EPSG:3857'), new SuperMap.Projection('EPSG:4326'));
 									serverGeom = SuperMap.REST.ServerGeometry.fromGeometry(geometry);
 									pFeature.geometry = serverGeom;
 								}
