@@ -166,9 +166,10 @@ var superMapInit = {
 		],
 		linearRings = new SuperMap.Geometry.LinearRing(points),
 		region = new SuperMap.Geometry.Polygon([linearRings]);
-			
+		
 		baseLayer = new SuperMap.Layer.TiledDynamicRESTLayer(
 			"기본", "http://61.32.6.18:9090/iserver/services/vworld/rest/maps/OSM", 
+			//"기본", "http://localhost:8090/iserver/services/vworld/rest/maps/OSM", 
 			{
 				transparent: true, 
 				cacheEnabled: false
@@ -197,20 +198,20 @@ var superMapInit = {
 		var url2 = "http://61.32.6.18:9090/iserver/services/map-Change_SuperMan/rest/maps/도시가스지도";
 		var urlWms = "http://61.32.6.18:8090/iserver/services/map-edit_test/rest/maps/test_point@test5186";
 		//iServer7c
-		var url3 = "http://61.32.6.18:8090/iserver/services/map-im5000/rest/maps/Dynamic_IM5000";
+		var url3 = "http://localhost:8090/iserver/services/map-world/rest/maps/World Map";
 		var url5 = "http://192.168.0.247:8090/iserver/services/map-Change_SuperMan/rest/maps/행정구역" ;
 		
 		//imsangdo7c = new SuperMap.Layer.WMS("Asiana",urlWms,{layers: "Asiana"});
 		
 		
 		imsangdo7c = new SuperMap.Layer.TiledDynamicRESTLayer(
-			"임상도 7c", url2, 
+			"임상도 7c", url3, 
 			{
 				transparent: true, 
 				cacheEnabled: false,
-				layersID : "[0:0]"
+				layersID : "[0:0,5,9]"
 			},{
-				//projection:'EPSG:3857',
+				projection:'EPSG:3857',
 				resolutions :satelliteLayer.resolutions,
 				isBaseLayer :false
 			}
@@ -358,9 +359,6 @@ var superMapInit = {
 		$("#btnPrint").on("click",function(){
 			var host = "http://127.0.0.1:8090/iserver";
 			var size = map.getCurrentSize();
-			var mapViewPort = $("#map div:first-child");
-			
-			console.log(map.getExtent());
 			var layers = map.layers;
 			var layerInfos = [];
 			$.each(layers,function(idx,layer){
@@ -382,22 +380,20 @@ var superMapInit = {
 								style = layer.style;
 							} 
 							var styleMapRules = layer.styleMap.styles.default.rules;
-							//console.log(layer.styleMap.styles.default.rules[0].symbolizer);
-							//var styleMap = layer.styleMap.styles.default.rules[0].symbolizer;
-							console.log(styleMapRules);
 							
 							pLayer.features = [];
 							$.each(layer.features,function(idx,feature){
 								var serverGeom={};
 								var pFeature = {};
+								var geometry = feature.geometry.transform(new SuperMap.Projection('EPSG:3857'), new SuperMap.Projection('EPSG:4326'));
 								if(feature.geometry.text != undefined){
 									serverGeom.parts = [1];
-									serverGeom.points = [{x:feature.geometry.x,y:feature.geometry.y}];
+									serverGeom.points = [{x:geometry.x,y:geometry.y}];
 									serverGeom.type= "TEXT";
 									serverGeom.text = feature.geometry.text;
 									pFeature.geometry = serverGeom;
 								}else {
-									serverGeom = SuperMap.REST.ServerGeometry.fromGeometry(feature.geometry);
+									serverGeom = SuperMap.REST.ServerGeometry.fromGeometry(geometry);
 									pFeature.geometry = serverGeom;
 								}
 								if(feature.style != null){
@@ -417,7 +413,6 @@ var superMapInit = {
 								
 								pLayer.features.push(pFeature);
 							});
-							//pLayer.features = layer.features;
 							layerInfos.push(pLayer);
 						}
 						
@@ -430,7 +425,11 @@ var superMapInit = {
 				"imgInfo" : {
 					"pageSize": $("#printPageSize").val(),
 					"orientation": pageSize,
-					"extent":map.getExtent(),
+					"extents":[
+					    {"epsgCode":3857,"extent":map.getExtent()},
+					    {"epsgCode":4326,"extent":map.getExtent().transform(new SuperMap.Projection('EPSG:3857'), new SuperMap.Projection('EPSG:4326'))},
+					    {"epsgCode":5186,"extent":map.getExtent().transform(new SuperMap.Projection('EPSG:3857'), new SuperMap.Projection('EPSG:5186'))}
+					],//.transform(new SuperMap.Projection('EPSG:3857'), new SuperMap.Projection('EPSG:4326')),
 					"sacle":map.getScale()
 				},
 				"layerInfos" :layerInfos
@@ -441,13 +440,7 @@ var superMapInit = {
 				var url="print.jsp?imgUrl="+host+"/"+result.path+"&pageSize="+pageSize;
 				var newWindow = window.open(url, "newWindow", "height=600, width=800, resizable=yes");
 			});
-//			var jsonParameters = SuperMap.Util.toJSON({
-//				"width" :size.w,
-//				"height" :size.h,
-//				"html" :mapViewPort.children().html(),
-//				"pageSize": $("#printPageSize").val(),
-//				"orientation": $("#printOrientation").val()
-//			});
+
 //			getServerResource("print",jsonParameters,function(json){
 //				var result = SuperMap.Util.transformResult(json);
 //				$("#printView").empty();
