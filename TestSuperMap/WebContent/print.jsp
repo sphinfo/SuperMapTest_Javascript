@@ -42,8 +42,8 @@ body {
 }
 
 .subpage {
-	padding: 2mm 2mm;
-	height: <%= height-20 %>mm;
+	padding: 0;
+	height: <%= height %>mm;
 }
 
 	
@@ -66,7 +66,7 @@ body {
 		height: <%= height %>mm;
 	}
 	.subpage {
-		padding: 10mm 13mm;
+		padding: 0;
 	}
 	.pritn_hidden {
 		display: none;
@@ -92,7 +92,7 @@ body {
 <input type="hidden" id="imagePath">
 <div class="page">
 	<div class="subpage">
-		<img id="printImg" src="<%= imgUrl %>" width="100%"></img>
+		<img id="printImg" src="<%= imgUrl %>" height="96%"></img>
 	</div>
 	
 	

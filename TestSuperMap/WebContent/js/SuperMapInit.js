@@ -209,7 +209,7 @@ var superMapInit = {
 			{
 				transparent: true, 
 				cacheEnabled: false,
-				layersID : "[0:0,5,9]"
+				layersID : "[0:0,5]"
 			},{
 				projection:'EPSG:3857',
 				resolutions :satelliteLayer.resolutions,
@@ -368,7 +368,7 @@ var superMapInit = {
 						pLayer.type = "REST";
 						pLayer.url = layer.url;
 						pLayer.layersID = layer.params.layersID;
-						console.log(pLayer.layersID);
+						//console.log(pLayer.layersID);
 						layerInfos.push(pLayer);
 					}else if(layer.CLASS_NAME == "SuperMap.Layer.Vector"){
 						console.log(layer.style);
@@ -379,22 +379,24 @@ var superMapInit = {
 							if(layer.style !=null){
 								style = layer.style;
 							} 
-							var styleMapRules = layer.styleMap.styles.default.rules;
+							var styleMapRules = layer.styleMap.styles["default"].rules;
 							
 							pLayer.features = [];
 							$.each(layer.features,function(idx,feature){
 								var serverGeom={};
 								var pFeature = {};
 								if(feature.geometry.text != undefined){
+									console.log(feature.geometry);
 									var point = new SuperMap.LonLat(feature.geometry.x,feature.geometry.y);
 									point = point.transform(new SuperMap.Projection('EPSG:3857'), new SuperMap.Projection('EPSG:4326'));
 									serverGeom.parts = [1];
-									serverGeom.points = [{x:point.x,y:point.y}];
+									serverGeom.points = [{x:point.lon,y:point.lat}];
 									serverGeom.type= "TEXT";
 									serverGeom.text = feature.geometry.text;
 									pFeature.geometry = serverGeom;
 								}else {
-									var geometry = feature.geometry.transform(new SuperMap.Projection('EPSG:3857'), new SuperMap.Projection('EPSG:4326'));
+									var geometry = feature.geometry.clone();
+									geometry.transform(new SuperMap.Projection('EPSG:3857'), new SuperMap.Projection('EPSG:4326'));
 									serverGeom = SuperMap.REST.ServerGeometry.fromGeometry(geometry);
 									pFeature.geometry = serverGeom;
 								}
@@ -436,7 +438,7 @@ var superMapInit = {
 				},
 				"layerInfos" :layerInfos
 			});
-			console.log(jsonParameters);
+			//console.log(jsonParameters);
 			getServerResource("print",jsonParameters,function(json){
 				var result = SuperMap.Util.transformResult(json);
 				var url="print.jsp?imgUrl="+host+"/"+result.path+"&pageSize="+pageSize;
@@ -627,7 +629,7 @@ var superMapInit = {
 //				console.log(feature);
 //				var transformedFeature = new SuperMap.Feature.Vector(geometry, feature.data);
 				var test = feature.clone();
-				console.log(test);
+				//console.log(test);
 				searchLayer.addFeatures(feature.clone());
 				
 			});
