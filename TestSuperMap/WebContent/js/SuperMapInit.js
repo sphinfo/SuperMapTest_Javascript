@@ -357,7 +357,7 @@ var superMapInit = {
 		});
 		
 		$("#btnPrint").on("click",function(){
-			var host = "http://127.0.0.1:8090/iserver";
+			var host = "http://61.32.6.18:18080/iserver";
 			var size = map.getCurrentSize();
 			var layers = map.layers;
 			var layerInfos = [];
