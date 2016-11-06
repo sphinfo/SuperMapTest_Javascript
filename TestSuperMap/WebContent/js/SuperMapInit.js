@@ -198,7 +198,7 @@ var superMapInit = {
 		var url2 = "http://61.32.6.18:9090/iserver/services/map-Change_SuperMan/rest/maps/도시가스지도";
 		var urlWms = "http://61.32.6.18:8090/iserver/services/map-edit_test/rest/maps/test_point@test5186";
 		//iServer7c
-		var url3 = "http://localhost:8090/iserver/services/map-world/rest/maps/World Map";
+		var url3 = "http://61.32.6.18:18080/iserver/services/map-world/rest/maps/World Map";
 		var url5 = "http://192.168.0.247:8090/iserver/services/map-Change_SuperMan/rest/maps/행정구역" ;
 		
 		//imsangdo7c = new SuperMap.Layer.WMS("Asiana",urlWms,{layers: "Asiana"});
@@ -302,7 +302,7 @@ var superMapInit = {
 		});
 		
 		$("#btnCapture").on("click",function(){
-			var host = "http://127.0.0.1:8090/iserver";
+			var host = "http://61.32.6.18:18080/iserver";
 			var size = map.getCurrentSize();
 			var mapViewPort = $("#map div:first-child");
 			
