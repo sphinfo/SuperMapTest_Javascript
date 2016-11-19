@@ -1,0 +1,84 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=EUC-KR">
+<title>Insert title here</title>
+<link href="css/jquery-ui.css" rel="stylesheet">
+<link href="css/jquery-ui.structure.css" rel="stylesheet">
+<link href="css/jquery-ui.theme.css" rel="stylesheet">
+
+<script type="text/javascript" src="js/supermap/libs/proj4js/proj4js-combined.js"></script>
+<script type="text/javascript" src="js/supermap/libs/proj4js/defs/EPSG-1000.js"></script>
+<script type="text/javascript" src="js/supermap/libs/proj4js/defs/EPSG3857.js"></script>
+<script type="text/javascript" src="js/supermap/libs/proj4js/defs/EPSG5186.js"></script>
+<script type="text/javascript" src="js/supermap/libs/proj4js/defs/EPSG900913.js"></script>
+<script type="text/javascript" src="js/supermap/libs/SuperMap.Include.js"></script>
+<script type="text/javascript" src="js/jquery-1.12.3.js"></script>
+<script type="text/javascript" src="js/bootstrap.js"></script>
+<script type="text/javascript" src="js/jquery-ui.js"></script>
+<script type="text/javascript">
+	var features=[];
+	$(document).ready(function(){
+		
+		$("#iframPopup").dialog({
+			autoOpen: false,
+			resizable: false,
+			width : 450,
+			height : 500,
+			open : function(evt){
+				$("#iframe").attr("src","iframePage.html");
+				//alert($("#iframe").attr("src"));
+			},
+			close : function(){
+				
+			}
+		});
+		$("#showIframe").on("click",function(){
+			getData();
+		});
+		function getData(){
+			var editUrl = "http://61.32.6.18:9090/iserver/services/data-Change_SuperMan/rest/data";
+			var getFeatureParam, getFeatureBySQLService, getFeatureBySQLParams;
+
+			getFeatureParam = new SuperMap.REST.FilterParameter({
+				//name: "Countries@World"
+				attributeFilter: "1=1"
+			});
+			getFeatureBySQLParams = new SuperMap.REST.GetFeaturesBySQLParameters({
+				queryParameter: getFeatureParam,
+				datasetNames:["PostgreSQL:Point","PostgreSQL:Line","PostgreSQL:Polygon"]
+			});
+			getFeatureBySQLService = new SuperMap.REST.GetFeaturesBySQLService(editUrl, {
+			eventListeners: {"processCompleted": editDataCompleted}});
+
+			getFeatureBySQLService.processAsync(getFeatureBySQLParams);
+		}
+		function editDataCompleted(queryEventArgs){
+			features =[];
+			var i, j, feature, 
+			result = queryEventArgs.result;
+			if (result && result.features) {
+				$.each(result.features,function(idx,feature){
+					features.push(feature);
+					//console.log(feature.geometry);
+				});
+				//map.zoomToExtent(searchLayer.getDataExtent());
+			}
+			$("#iframPopup").dialog("open");
+		}
+	});
+	function getFeutures(){
+		return features;
+	}
+</script>
+</head>
+<body>
+<div>
+	<button class="btn" id="showIframe">지도보기</button>
+</div>
+
+<div id="iframPopup" style="padding:5px;">
+	<iframe id="iframe" frameborder="0" marginheight="0" marginwidth="0" height="400" width="400" scrolling="no"></iframe>
+</div>
+</body>
+</html>

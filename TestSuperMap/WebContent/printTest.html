@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="EUC-KR">
+<title>Insert title here</title>
+<link href="css/jquery-ui.css" rel="stylesheet">
+<link href="css/jquery-ui.structure.css" rel="stylesheet">
+<link href="css/jquery-ui.theme.css" rel="stylesheet">
+<style type="text/css">
+html,body {
+	margin: 0;
+	overflow: hidden;
+	background: #fff;
+	height: 100%;
+	width : 100%;
+}
+div {
+	margin : 0;
+	padding : 0;
+}
+#map {
+	position: relative;
+	height: 100%;
+	width : 100%;
+	border: 1px solid #3473b7;
+}
+
+</style>
+<script type="text/javascript" src="js/supermap/libs/proj4js/proj4js-combined.js"></script>
+<script type="text/javascript" src="js/supermap/libs/proj4js/defs/EPSG-1000.js"></script>
+<script type="text/javascript" src="js/supermap/libs/proj4js/defs/EPSG3857.js"></script>
+<script type="text/javascript" src="js/supermap/libs/proj4js/defs/EPSG5186.js"></script>
+<script type="text/javascript" src="js/supermap/libs/proj4js/defs/EPSG900913.js"></script>
+<script type="text/javascript" src="js/supermap/libs/SuperMap.Include.js"></script>
+<script type="text/javascript" src="js/jquery-1.12.3.js"></script>
+<script type="text/javascript" src="js/bootstrap.js"></script>
+<script type="text/javascript" src="js/jquery-ui.js"></script>
+
+<script type="text/javascript">
+	var map,baseLayer,testLayer,testLayer2,tempLayer;
+	var editStyleMap = new SuperMap.StyleMap({
+		'default': new SuperMap.Style(null, {
+			rules: [new SuperMap.Rule({
+				symbolizer : {
+					"Point": {
+						pointRadius: 4,
+						graphicName: "square",
+						fillColor: "#304DBE",
+						fillOpacity: 1,
+						strokeWidth: 1,
+						strokeOpacity: 1,
+						strokeColor: "#ffffff"
+					},
+					"Line": {
+						strokeWidth: 3,
+						strokeOpacity: 1,
+						strokeColor: "#ffffff",
+						strokeDashstyle: "solid",
+					},
+					"Polygon": {
+						strokeWidth: 3,
+						strokeOpacity: 1,
+						strokeColor: "#ffffff",
+						strokeDashstyle: "solid",
+						fillColor: "#304DBE",
+						fillOpacity: 0.8
+					}
+				}
+			})]
+		}),
+		"select":{
+			strokeWidth: 3,
+			strokeOpacity: 1,
+			strokeColor: "#304DBE",
+			strokeDashstyle: "solid",
+			fillColor: "#cdeddc",
+			fillOpacity: 0.8,
+	        graphicZIndex:2
+		}
+	});
+	$(document).ready(function(){
+		map = new SuperMap.Map("map", {
+			units:"m",
+			numZoomLevels : 19,
+			projection : 'EPSG:3857',
+			controls : [
+				new SuperMap.Control.LayerSwitcher(), 
+				// 면적 
+				new SuperMap.Control.Zoom() ,
+				new SuperMap.Control.Navigation({
+					id:"pan",
+	                dragPanOptions: {
+	                	documentDrag:true,
+	                    enableKinetic: true
+	                }
+				})
+			]
+		});
+		baseLayer = new SuperMap.Layer.TiledDynamicRESTLayer(
+			"기본", "http://61.32.6.18:9090/iserver/services/vworld/rest/maps/OSM", 
+			//"기본", "http://localhost:8090/iserver/services/vworld/rest/maps/OSM", 
+			{
+				transparent: true, 
+				cacheEnabled: false
+			},{
+				projection:'EPSG:3857',
+				isBaseLayer :true
+			}
+		);
+		testLayer = new SuperMap.Layer.TiledDynamicRESTLayer(
+			"BUS_TEXR_BOUND", "http://192.168.0.39:8090/iserver/services/map-bus_route/rest/maps/BUS_ROUTE_TEXR_BOUND", 
+			//"test", "http://192.168.0.39:8090/iserver/services/map-bus_route/rest/maps/BUS_ROUTE", 
+			{
+				transparent: true, 
+				cacheEnabled: false
+			},{
+				projection:'EPSG:3857',
+				isBaseLayer :false,
+				//resolutions : baseLayer.resolutions,
+				scales :  baseLayer.scales
+			}
+		);
+		testLayer2 = new SuperMap.Layer.TiledDynamicRESTLayer(
+			//"test", "http://192.168.0.39:8090/iserver/services/map-bus_route/rest/maps/BUS_ROUTE_TEXR_BOUND", 
+			"BUS_ROUTE", "http://192.168.0.39:8090/iserver/services/map-bus_route/rest/maps/BUS_ROUTE", 
+			{
+				transparent: true, 
+				cacheEnabled: false
+			},{
+				projection:'EPSG:3857',
+				isBaseLayer :false,
+				//resolutions : baseLayer.resolutions,
+				scales :  baseLayer.scales
+			}
+		);
+		testLayer.setOpacity(0.8);
+		testLayer.setVisibility(true);
+		
+		testLayer.events.on({
+			"layerInitialized" : addLayer,
+			"loadend" :function(){
+				//testLayer.canvasContext.clearRect(0,0,400,400);
+				//testLayer.redraw()
+			}
+		});
+		$("#testBtn").on("click",function(){
+			if(testLayer.getVisibility()){
+				testLayer.setVisibility(false);
+			}else {
+				testLayer.canvasContext.clearRect(0,0,testLayer.canvas.width,testLayer.canvas.height);
+				testLayer.setVisibility(true);
+				//testLayer.redraw();
+			}
+		});
+		function addLayer(){
+			
+			tempLayer = new SuperMap.Layer.Vector("Search Layer",{
+				isBaseLayer: false,
+				styleMap : editStyleMap,
+				units : "m"
+			});
+			tempLayer.displayOutsideMaxExtent = true;
+			tempLayer.projection = 'EPSG:3857';
+			tempLayer.maxExtent = baseLayer.maxExtent;
+			
+			map.addLayers([baseLayer,testLayer,testLayer2,tempLayer]);
+			map.setCenter(new SuperMap.LonLat(14174150.9795765, 4495339.98139926), 7);
+			getData();
+			
+		};
+		function getData(){
+			var editUrl = "http://61.32.6.18:9090/iserver/services/data-Change_SuperMan/rest/data";
+			var getFeatureParam, getFeatureBySQLService, getFeatureBySQLParams;
+
+			getFeatureParam = new SuperMap.REST.FilterParameter({
+				//name: "Countries@World"
+				attributeFilter: "1=1"
+			});
+			getFeatureBySQLParams = new SuperMap.REST.GetFeaturesBySQLParameters({
+				queryParameter: getFeatureParam,
+				datasetNames:["PostgreSQL:Point","PostgreSQL:Line","PostgreSQL:Polygon"]
+			});
+			getFeatureBySQLService = new SuperMap.REST.GetFeaturesBySQLService(editUrl, {
+			eventListeners: {"processCompleted": editDataCompleted}});
+
+			getFeatureBySQLService.processAsync(getFeatureBySQLParams);
+		}
+		function editDataCompleted(queryEventArgs){
+			features =[];
+			var i, j, feature, 
+			result = queryEventArgs.result;
+			if (result && result.features) {
+				$.each(result.features,function(idx,feature){
+					features.push(feature);
+					tempLayer.addFeatures(feature);
+				});
+				tempLayer.refresh();
+			}
+		}
+	});
+</script>
+</head>
+<body>
+<div id="map"></div>
+<div style = "width:500px;height:80px;position: absolute;top:0;left:20">
+	<button id="testBtn">on/off</button>
+</div>
+</body>
+</html>
