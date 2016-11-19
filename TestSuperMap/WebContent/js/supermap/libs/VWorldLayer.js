@@ -56,13 +56,13 @@ SuperMap.Layer.VWorldLayer = SuperMap.Class(SuperMap.CanvasLayer, {
      * name - {String} Layer name
      */
     initialize: function(name, options) {
-    	var resLen = 13;
+    	var resLen = 20;
         var resStart = 0;
     	var resolutionsArr = [] ;
     	var scalesArr = [] ;
     	var dpi = 95.99999999999984;
         for(var i=resStart;i<=resLen;i++){
-            var res3857 = 2445.9849/Math.pow(2,i);
+            var res3857 = 156543.0339/Math.pow(2,i);
             resolutionsArr.push(res3857);
 
             var scale3857 = 0.0127/dpi/res3857;
@@ -70,13 +70,11 @@ SuperMap.Layer.VWorldLayer = SuperMap.Class(SuperMap.CanvasLayer, {
         }
         options = SuperMap.Util.extend({
             projection: "EPSG:3857",
-            
-            //minZoom : 7
+            minZoom : 6 ,
             resolutions :resolutionsArr,
             scales : scalesArr
         }, options);
-        options.useCORS=true;
-        console.log(options);
+       /// options.useCORS=true;
         SuperMap.CanvasLayer.prototype.initialize.apply(this,[name,this.url,{},options] );
     },
 
@@ -120,7 +118,7 @@ SuperMap.Layer.VWorldLayer = SuperMap.Class(SuperMap.CanvasLayer, {
         url= SuperMap.String.format(url, {
             x: xyz.x,
             y: xyz.y,
-            z: xyz.z+6
+            z: xyz.z
         });
         return  url;
     },

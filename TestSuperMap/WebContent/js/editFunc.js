@@ -71,15 +71,15 @@ SmEdit = {
 		var feature = editLayer.getFeatureById(id);
 		
 		// 7c일 경우 ESPG 4326으로 좌표 변환 
-		var geometry = feature.geometry.transform(
-			new SuperMap.Projection('EPSG:900913'), 
-		    new SuperMap.Projection('EPSG:4326')
-		);
-		// 8c일 경우 서비스 좌표계로 변환 
 //		var geometry = feature.geometry.transform(
 //			new SuperMap.Projection('EPSG:900913'), 
-//		    new SuperMap.Projection('EPSG:5186')
+//		    new SuperMap.Projection('EPSG:4326')
 //		);
+		// 8c일 경우 서비스 좌표계로 변환 
+		var geometry = feature.geometry.transform(
+			new SuperMap.Projection('EPSG:900913'), 
+		    new SuperMap.Projection('EPSG:5186')
+		);
 			
 		var editFeatureParameter,
         editFeatureService,
@@ -100,11 +100,11 @@ SmEdit = {
         });
 		var editUrl = SmEdit.editDataUrl+"/";
 		if(geometry.CLASS_NAME=="SuperMap.Geometry.Point"){
-			editUrl += "datasources/test5186/datasets/test_point/";
+			editUrl += "datasources/PostgreSQL/datasets/Point/";
 		}else if(geometry.CLASS_NAME=="SuperMap.Geometry.LineString"){
-			editUrl += "datasources/test5186/datasets/test_line/";
+			editUrl += "datasources/PostgreSQL/datasets/Line/";
 		}else if(geometry.CLASS_NAME=="SuperMap.Geometry.Polygon"){
-			editUrl += "datasources/test5186/datasets/test_polygon/";
+			editUrl += "datasources/PostgreSQL/datasets/Polygon/";
 		}
 		
 		editFeatureService = new SuperMap.REST.EditFeaturesService(editUrl, {
@@ -139,11 +139,11 @@ SmEdit = {
 			ids.push(feature.data.SMID);
 			var editUrl = SmEdit.editDataUrl+"/";
 			if(feature.geometry.CLASS_NAME=="SuperMap.Geometry.Point"){
-				editUrl += "datasources/test5186/datasets/test_point/";
+				editUrl += "datasources/PostgreSQL/datasets/Point/";
 			}else if(feature.geometry.CLASS_NAME=="SuperMap.Geometry.LineString"){
-				editUrl += "datasources/test5186/datasets/test_line/";
+				editUrl += "datasources/PostgreSQL/datasets/Line/";
 			}else if(feature.geometry.CLASS_NAME=="SuperMap.Geometry.Polygon"){
-				editUrl += "datasources/test5186/datasets/test_polygon/";
+				editUrl += "datasources/PostgreSQL/datasets/Polygon/";
 			}
 			
 			editFeatureParameter = new SuperMap.REST.EditFeaturesParameters({

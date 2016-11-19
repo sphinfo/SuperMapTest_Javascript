@@ -65,21 +65,22 @@ div {
 <script type="text/javascript" src="js/jquery.fileDownload.js"></script>
 
 <!--[if lte IE 9]>
-	<script type="text/javascript" src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-	<script type="text/javascript" src="js/supermap/libs/excanvas.js"></script>
+	
 <![endif]-->
+<!-- <script type="text/javascript" src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script> -->
+<!-- 	<script type="text/javascript" src="js/supermap/libs/excanvas.js"></script> -->
 <script type="text/javascript" src="js/supermap/libs/html2canvas.js"></script>
 <!--[if lte IE 8]>
-
-<script type="text/javascript" src="js/supermap/libs/html2canvas.svg.js"></script>
 <![endif]-->
+<!-- <script type="text/javascript" src="js/supermap/libs/html2canvas.svg.js"></script> -->
+
 <!-- <script type="text/javascript" src="js/supermap/libs/canvas2image.js"></script> -->
 <script type="text/javascript" src="js/supermap/libs/MapToImae.js"></script>
 <script type="text/javascript" src="js/spectrum.js"></script>
 
 <script type="text/javascript" src="js/drawFunc.js"></script>
 <script type="text/javascript" src="js/editFunc.js"></script>
-
+<script type="text/javascript" src="js/smEvent.js"></script>
 <script type="text/javascript" src="js/SuperMapInit.js"></script>
 
 <script type="text/javascript">
@@ -480,6 +481,14 @@ $(document).ready(function() {
 					<option value="A0">A0</option>
 				</select>
 			</div>
+			<div class="col-xs-2">문서타입</div>
+			<div class="col-xs-3">
+				<select id="docType">
+					<option value="IMG">IMG</option>
+					<option value="PDF">PDF</option>
+				</select>
+			</div>
+			
 <!-- 			<div class="col-xs-2">방향</div> -->
 <!-- 			<div class="col-xs-3"> -->
 <!-- 				<select id="printOrientation"> -->
