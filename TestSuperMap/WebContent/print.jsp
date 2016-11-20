@@ -5,15 +5,17 @@
 <%
 	String imgUrl =request.getParameter("imgUrl")!=null?request.getParameter("imgUrl"):"";
 	String pageSize =request.getParameter("pageSize")!=null?request.getParameter("pageSize"):"";
-	int width = 297  ;
-	int height = 210 ;
+	int width = 210 ;
+	int height = 297  ;
+	
 	
 	if(pageSize.equals("A3")){
-		width =  420;
-		height = 297;
+		width = 297;
+		height =  420;
+		
 	} else if(pageSize.equals("A0")){
-		width =  1189;
-		height = 841;
+		width = 841;
+		height =  1189;
 	}
 %>
 

@@ -369,7 +369,7 @@ var smEvent = {
 					            	 "epsgCode" : 5186,
 					            	 "extent" : map.getExtent().transform(new SuperMap.Projection('EPSG:3857'),new SuperMap.Projection('EPSG:5186'))
 					             }],
-					"sacle" : map.getScale(),
+					"scale" : map.getScale(),
 					"title" : $("#printTitle").val(),
 					"content" : $("#printContent").val()
 				},
