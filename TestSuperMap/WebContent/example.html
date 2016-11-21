@@ -379,6 +379,20 @@ $(document).ready(function() {
 			
 		}
 	});
+	// 도형 설정 팝업 설정
+	$("#printPopup2").dialog({
+		autoOpen: false,
+		resizable: false,
+		width : 450,
+		height : 80,
+		open : function(evt){
+			
+			
+		},
+		close : function(){
+			
+		}
+	});
 
 });
 
@@ -510,6 +524,47 @@ $(document).ready(function() {
 			<div class="col-xs-9">
 				<input id="printContent" type="text" class="col-xs-9">
 			</div>
+		</div>
+	</div>
+	<div id="printPopup2" title="출력">
+		<div id="printSetting" class="row mainRow" >
+			<div class="col-xs-2">사이즈</div>
+			<div class="col-xs-2">
+				<select id="printPageSize2">
+					<option value="A4">A4</option>
+					<option value="A3">A3</option>
+					<option value="A0">A0</option>
+				</select>
+			</div>
+<!-- 			<div class="col-xs-3">문서타입</div> -->
+<!-- 			<div class="col-xs-2"> -->
+<!-- 				<select id="docType"> -->
+<!-- 					<option value="IMG">IMG</option> -->
+<!-- 					<option value="PDF">PDF</option> -->
+<!-- 				</select> -->
+<!-- 			</div> -->
+			
+<!-- 			<div class="col-xs-2">방향</div> -->
+<!-- 			<div class="col-xs-3"> -->
+<!-- 				<select id="printOrientation"> -->
+<!-- 					<option value="Landscape">가로</option> -->
+<!-- 					<option value="Portrait">세로</option> -->
+<!-- 				</select> -->
+<!-- 			</div> -->
+			<div class="col-xs-2">
+				<a id="btnPrint" class="btn btn-info btn-xs">출력</a>	
+			</div>
+		</div>
+		<div id="printView" class="row mainRow" >
+<!-- 			<div class="col-xs-3">제목</div> -->
+<!-- 			<div class="col-xs-9"> -->
+<!-- 				<input id="printTitle" type="text" class="col-xs-9"> -->
+<!-- 			</div> -->
+			
+<!-- 			<div class="col-xs-3">내용</div> -->
+<!-- 			<div class="col-xs-9"> -->
+<!-- 				<input id="printContent" type="text" class="col-xs-9"> -->
+<!-- 			</div> -->
 		</div>
 	</div>
 </body>

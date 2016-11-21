@@ -94,7 +94,7 @@ body {
 <input type="hidden" id="imagePath">
 <div class="page">
 	<div class="subpage">
-		<img id="printImg" src="<%= imgUrl %>" height="96%"></img>
+		<img id="printImg" src="<%= imgUrl %>" width="96%" height="96%"></img>
 	</div>
 	
 	

@@ -56,15 +56,15 @@ SuperMap.Layer.VWorldLayer = SuperMap.Class(SuperMap.CanvasLayer, {
      * name - {String} Layer name
      */
     initialize: function(name, options) {
-    	var resLen = 20;
+    	var resLen = 14;
         var resStart = 0;
     	var resolutionsArr = [] ;
     	var scalesArr = [] ;
     	var dpi = 95.99999999999984;
         for(var i=resStart;i<=resLen;i++){
-            var res3857 = 156543.0339/Math.pow(2,i);
+            var res3857 = 2445.98/Math.pow(2,i);
             resolutionsArr.push(res3857);
-
+            console.log(i+":"+res3857);
             var scale3857 = 0.0127/dpi/res3857;
             scalesArr.push(scale3857);
         }
@@ -118,7 +118,7 @@ SuperMap.Layer.VWorldLayer = SuperMap.Class(SuperMap.CanvasLayer, {
         url= SuperMap.String.format(url, {
             x: xyz.x,
             y: xyz.y,
-            z: xyz.z
+            z: xyz.z+6
         });
         return  url;
     },

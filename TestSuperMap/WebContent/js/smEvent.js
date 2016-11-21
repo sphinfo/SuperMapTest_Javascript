@@ -77,10 +77,9 @@ var smEvent = {
 				}, {
 					projection : 'EPSG:3857',
 					scales : superMapInit.scales,
-					
-					
 					isBaseLayer : true
 				});
+		baseLayer.useCanvas = false;
 		satelliteLayer = new SuperMap.Layer.TiledDynamicRESTLayer("영상",
 				//"http://61.32.6.18:9090/iserver/services/Satellite/rest/maps/OSM",
 				// "기본",
@@ -94,26 +93,28 @@ var smEvent = {
 					scales : superMapInit.scales,
 					isBaseLayer : true
 				});
-		hybridLayer = new SuperMap.Layer.TiledDynamicRESTLayer("Hybrid",
-				"http://61.32.6.18:9090/iserver/services/Hybrid/rest/maps/OSM",
-				// "기본",
-				// "http://localhost:8090/iserver/services/vworld/rest/maps/OSM",
-				{
-					transparent : true,
-					cacheEnabled : false
-				}, {
-					projection : 'EPSG:3857',
-					scales : superMapInit.scales,
-					isBaseLayer : false
-				});
+		satelliteLayer.useCanvas = false;
+//		hybridLayer = new SuperMap.Layer.TiledDynamicRESTLayer("Hybrid",
+//				"http://61.32.6.18:9090/iserver/services/Hybrid/rest/maps/OSM",
+//				// "기본",
+//				// "http://localhost:8090/iserver/services/vworld/rest/maps/OSM",
+//				{
+//					transparent : true,
+//					cacheEnabled : false
+//				}, {
+//					projection : 'EPSG:3857',
+//					scales : superMapInit.scales,
+//					isBaseLayer : false
+//				});
+//		hybridLayer.useCanvas = false;
 		// baseLayer = new SuperMap.Layer.VWorldLayer("Base");
 //		satelliteLayer = new SuperMap.Layer.VWorldLayer("영상");
-//		hybridLayer = new SuperMap.Layer.VWorldLayer("Hybrid");
+		hybridLayer = new SuperMap.Layer.VWorldLayer("Hybrid");
 
 		// baseLayer.url =
 		// ['http://61.32.6.18:18080/2d/Base/201512/${z}/${x}/${y}.png'];
 //		satelliteLayer.url = [ 'http://xdworld.vworld.kr:8080/2d/Satellite/201512/${z}/${x}/${y}.jpeg' ];
-//		hybridLayer.url = [ 'http://xdworld.vworld.kr:8080/2d/Hybrid/201512/${z}/${x}/${y}.png' ];
+		hybridLayer.url = [ 'http://xdworld.vworld.kr:8080/2d/Hybrid/201512/${z}/${x}/${y}.png' ];
 //		hybridLayer.isBaseLayer = false;
 //
 //		// baseLayer.useCORS = true;
@@ -141,7 +142,7 @@ var smEvent = {
 			isBaseLayer : false
 		});
 		imsangdo7c.useCORS = true;
-		// imsangdo7c.useCanvas = false;
+		imsangdo7c.useCanvas = false;
 		// imsangdo8c = new SuperMap.Layer.TiledDynamicRESTLayer(
 		// "임상도 8c", url2,
 		// {
@@ -233,21 +234,24 @@ var smEvent = {
 			var size = map.getCurrentSize();
 			var mapViewPort = $("#map div:first-child");
 
-			// var jsonParameters = SuperMap.Util.toJSON({
-			// "width" :size.w,
-			// "height" :size.h,
-			// "html" :mapViewPort.children().html()
-			// });
-			// getServerResource("capture",jsonParameters,function(json){
-			// var result = SuperMap.Util.transformResult(json);
-			// var link = document.createElement('a');
-			// link.href = host+"/"+result.path;
-			// link.download = 'Download.png';
-			// link.target= "_blank";
-			// document.body.appendChild(link);
-			// link.click();
-			// link.remove();
-			// });
+			var jsonParameters = SuperMap.Util.toJSON({
+				"width" :size.w,
+				"height" :size.h,
+				//"pageSize" : "A4",
+				//"orientation" : "Landscape",
+				"html" :mapViewPort.children().html()
+			});
+			getServerResource("image",jsonParameters,function(json){
+				var result = SuperMap.Util.transformResult(json);
+				var pdfurl = host+"/" + result.path;
+				var link = document.createElement('a');
+				link.href = pdfurl;
+				link.download = 'Download.png';
+				link.target= "_blank";
+				document.body.appendChild(link);
+				link.click();
+				link.remove();
+			 });
 
 			// MapToImg&&MapToImg.excute(map);
 
@@ -315,9 +319,8 @@ var smEvent = {
 								var serverGeom = {};
 								var pFeature = {};
 								if (feature.geometry.text != undefined) {
-									console.log(feature.geometry);
-									var point = new SuperMap.LonLat(eature.geometry.x,feature.geometry.y);
-									point = point.transform(new SuperMap.Projection('EPSG:3857'),new SuperMap.Projection('EPSG:4326'));
+									var point = new SuperMap.LonLat(feature.geometry.x,feature.geometry.y);
+									//point = point.transform(new SuperMap.Projection('EPSG:3857'),new SuperMap.Projection('EPSG:4326'));
 									serverGeom.parts = [ 1 ];
 									serverGeom.points = [ {x : point.lon,y : point.lat} ];
 									serverGeom.type = "TEXT";
@@ -325,7 +328,7 @@ var smEvent = {
 									pFeature.geometry = serverGeom;
 								} else {
 									var geometry = feature.geometry.clone();
-									geometry.transform(new SuperMap.Projection('EPSG:3857'),new SuperMap.Projection('EPSG:4326'));
+									//geometry.transform(new SuperMap.Projection('EPSG:3857'),new SuperMap.Projection('EPSG:4326'));
 									serverGeom = SuperMap.REST.ServerGeometry.fromGeometry(geometry);
 									pFeature.geometry = serverGeom;
 								}
@@ -379,11 +382,6 @@ var smEvent = {
 			getServerResource("getImage",jsonParameters,function(json) {
 				var result = SuperMap.Util
 						.transformResult(json);
-				
-				// if
-				// (document.domain.toString().indexOf("61.32.6.18:18080")
-				// != -1)
-				// document.domain="61.32.6.18:18080";
 				if(docType=="PDF"){
 					var pdfurl = host+"/" + result.path;
 					var link = document.createElement('a');
@@ -397,56 +395,9 @@ var smEvent = {
 					var imgurl = "print.jsp?imgUrl=" + host
 							+ "/" + result.path
 							+ "&pageSize=" + pageSize;
-					var img = $("<img/>");
-					img.attr("src",host+"/" + result.path);
-					img.on("load",function(){
-						img[0].execCommand("SaveAs");
-						img.remove();
-					});
-					img.appendTo($("body"));
-					//setTimeout('win.document.execCommand("SaveAs")', 100);
-		            //setTimeout('win.close()', 500);
-		            //$("<iframe width='450' height='400'></iframe>")
-		            //.attr("src",host+"/"+result.path).appendTo($("body")).remove();
-		            
 					var newWindow = window.open(imgurl, "newWindow","height=600, width=800, resizable=yes");
 				}
-				
-				 
-				
 			});
-
-			// getServerResource("print",jsonParameters,function(json){
-			// var result = SuperMap.Util.transformResult(json);
-			// $("#printView").empty();
-			// $("<iframe></iframe>")
-			// .attr("src",host+"/"+result.path)
-			// .appendTo($("#printView"));
-			// });
-
-			// var mapElem = mapViewPort.children()[0]; // the
-			// id of your map div here
-			// html2canvas(mapElem, {
-			// useCORS: true,
-			// onrendered: function(canvas) {
-			// mapImg = canvas.toDataURL('image/png');
-			// var jsonCanvasParameters = SuperMap.Util.toJSON({
-			// "width" :size.w,
-			// "height" :size.h,
-			// "html" :"<img src='"+mapImg+"'/>",
-			// "pageSize": $("#printPageSize").val(),
-			// "orientation": $("#printOrientation").val()
-			// });
-			// getServerResource("print",jsonCanvasParameters,function(json){
-			// var result = SuperMap.Util.transformResult(json);
-			// $("#printView").empty();
-			// $("<iframe width='450' height='400'></iframe>")
-			// .attr("src",host+"/"+result.path)
-			// .appendTo($("#printView"));
-			//	 				
-			// });
-			// }
-			// });
 		});
 		// Anchored 팝업 offset 설정 (REQ-0006)
 		$("#btnPopup").on("click",function() {
