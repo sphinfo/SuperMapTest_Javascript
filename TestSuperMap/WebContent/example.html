@@ -370,7 +370,7 @@ $(document).ready(function() {
 		autoOpen: false,
 		resizable: false,
 		width : 450,
-		height : 80,
+		height : 150,
 		open : function(evt){
 			
 			
@@ -474,15 +474,15 @@ $(document).ready(function() {
 	<div id="printPopup" title="출력">
 		<div id="printSetting" class="row mainRow" >
 			<div class="col-xs-2">사이즈</div>
-			<div class="col-xs-3">
+			<div class="col-xs-2">
 				<select id="printPageSize">
 					<option value="A4">A4</option>
 					<option value="A3">A3</option>
 					<option value="A0">A0</option>
 				</select>
 			</div>
-			<div class="col-xs-2">문서타입</div>
-			<div class="col-xs-3">
+			<div class="col-xs-3">문서타입</div>
+			<div class="col-xs-2">
 				<select id="docType">
 					<option value="IMG">IMG</option>
 					<option value="PDF">PDF</option>
@@ -501,7 +501,15 @@ $(document).ready(function() {
 			</div>
 		</div>
 		<div id="printView" class="row mainRow" >
+			<div class="col-xs-3">제목</div>
+			<div class="col-xs-9">
+				<input id="printTitle" type="text" class="col-xs-9">
+			</div>
 			
+			<div class="col-xs-3">내용</div>
+			<div class="col-xs-9">
+				<input id="printContent" type="text" class="col-xs-9">
+			</div>
 		</div>
 	</div>
 </body>

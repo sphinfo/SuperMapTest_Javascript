@@ -299,7 +299,8 @@ function processCompleted(getFeaturesEventArgs) {
 }
 
 function getServerResource(type,jsonParameters,callback){
-	var host = "http://61.32.6.18:18080/iserver";
+	//var host = "http://61.32.6.18:18080/iserver";
+	var host = "http://localhost:8090/iserver";
 	var capturUrl = host+"/services/spatialanalyst-sample/restjsr/"+type+".jsonp";
 	var restService = new SuperMap.ServiceBase(capturUrl+"?returnContent=true");
 	restService.isInTheSameDomain = false;

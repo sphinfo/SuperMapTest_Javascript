@@ -68,9 +68,9 @@ var smEvent = {
 				points), region = new SuperMap.Geometry.Polygon([ linearRings ]);
 
 		baseLayer = new SuperMap.Layer.TiledDynamicRESTLayer("기본",
-				"http://61.32.6.18:9090/iserver/services/vworld/rest/maps/OSM",
+				//"http://61.32.6.18:9090/iserver/services/vworld/rest/maps/OSM",
 				// "기본",
-				// "http://localhost:8090/iserver/services/vworld/rest/maps/OSM",
+				 "http://localhost:8090/iserver/services/vworld/rest/maps/OSM",
 				{
 					transparent : true,
 					cacheEnabled : false
@@ -82,9 +82,9 @@ var smEvent = {
 					isBaseLayer : true
 				});
 		satelliteLayer = new SuperMap.Layer.TiledDynamicRESTLayer("영상",
-				"http://61.32.6.18:9090/iserver/services/Satellite/rest/maps/OSM",
+				//"http://61.32.6.18:9090/iserver/services/Satellite/rest/maps/OSM",
 				// "기본",
-				// "http://localhost:8090/iserver/services/vworld/rest/maps/OSM",
+				 "http://localhost:8090/iserver/services/vworld/rest/maps/OSM",
 				{
 					transparent : true,
 					cacheEnabled : false,
@@ -285,7 +285,8 @@ var smEvent = {
 		});
 
 		$("#btnPrint").on("click",function() {
-			var host = "http://61.32.6.18:18080/iserver";
+			//var host = "http://61.32.6.18:18080/iserver";
+			var host = "http://localhost:8090/iserver";
 			var size = map.getCurrentSize();
 			var layers = map.layers;
 			var layerInfos = [];
@@ -368,7 +369,9 @@ var smEvent = {
 					            	 "epsgCode" : 5186,
 					            	 "extent" : map.getExtent().transform(new SuperMap.Projection('EPSG:3857'),new SuperMap.Projection('EPSG:5186'))
 					             }],
-					"sacle" : map.getScale()
+					"sacle" : map.getScale(),
+					"title" : $("#printTitle").val(),
+					"content" : $("#printContent").val()
 				},
 				"layerInfos" : layerInfos
 			});
