@@ -64,7 +64,7 @@ SuperMap.Layer.VWorldLayer = SuperMap.Class(SuperMap.CanvasLayer, {
         for(var i=resStart;i<=resLen;i++){
             var res3857 = 2445.98/Math.pow(2,i);
             resolutionsArr.push(res3857);
-            console.log(i+":"+res3857);
+           // console.log(i+":"+res3857);
             var scale3857 = 0.0127/dpi/res3857;
             scalesArr.push(scale3857);
         }

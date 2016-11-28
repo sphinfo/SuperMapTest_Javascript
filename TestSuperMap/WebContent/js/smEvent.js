@@ -68,9 +68,9 @@ var smEvent = {
 				points), region = new SuperMap.Geometry.Polygon([ linearRings ]);
 
 		baseLayer = new SuperMap.Layer.TiledDynamicRESTLayer("기본",
-				//"http://61.32.6.18:9090/iserver/services/vworld/rest/maps/OSM",
+				"http://61.32.6.18:9090/iserver/services/vworld/rest/maps/OSM",
 				// "기본",
-				 "http://localhost:8090/iserver/services/vworld/rest/maps/OSM",
+				// "http://localhost:8090/iserver/services/vworld/rest/maps/OSM",
 				{
 					transparent : true,
 					cacheEnabled : false
@@ -81,9 +81,9 @@ var smEvent = {
 				});
 		baseLayer.useCanvas = false;
 		satelliteLayer = new SuperMap.Layer.TiledDynamicRESTLayer("영상",
-				//"http://61.32.6.18:9090/iserver/services/Satellite/rest/maps/OSM",
+				"http://61.32.6.18:9090/iserver/services/Satellite/rest/maps/OSM",
 				// "기본",
-				 "http://localhost:8090/iserver/services/vworld/rest/maps/OSM",
+				 //"http://localhost:8090/iserver/services/vworld/rest/maps/OSM",
 				{
 					transparent : true,
 					cacheEnabled : false,
@@ -126,7 +126,7 @@ var smEvent = {
 		var url2 = "http://61.32.6.18:9090/iserver/services/map-Change_SuperMan/rest/maps/도시가스지도";
 		var urlWms = "http://61.32.6.18:8090/iserver/services/map-edit_test/rest/maps/test_point@test5186";
 		// iServer7c
-		var url3 = "http://61.32.6.18:18080/iserver/services/map-world/rest/maps/World Map";
+		var url3 = "http://61.32.6.18:9090/iserver/services/map-POC_3/rest/maps/법정경계_읍면동";
 		var url5 = "http://211.44.239.144:8090/iserver/services/map-map1/rest/maps/BUS_ROUTE";
 
 		// imsangdo7c = new SuperMap.Layer.WMS("Asiana",urlWms,{layers:
@@ -135,7 +135,7 @@ var smEvent = {
 		imsangdo7c = new SuperMap.Layer.TiledDynamicRESTLayer("임상도 7c", url3, {
 			transparent : true,
 			cacheEnabled : false,
-			layersID : "[0:5]"
+			//layersID : "[0:5]"
 		}, {
 			projection : 'EPSG:3857',
 			resolutions : satelliteLayer.resolutions,
@@ -143,6 +143,20 @@ var smEvent = {
 		});
 		imsangdo7c.useCORS = true;
 		imsangdo7c.useCanvas = false;
+		//imsangdo7c.setOpacity(0.4);
+		var wmsurl = "http://localhost:8090/iserver/services/map-china400/wms130/China";
+		wms= new SuperMap.Layer.WMS("China", wmsurl, 
+			{ layers: "China", version: '1.3.0' }, 
+			{projection:"EPSG:3857",resolutions : satelliteLayer.resolutions,isBaseLayer :false,transparent : true}
+		);
+		//wms.setOpacity(0.4);
+		var vWmsurl = "http://map.vworld.kr/js/wms.do";
+		wms2= new SuperMap.Layer.WMS("vWm", vWmsurl, 
+			{ layers: "LT_C_UQ111", version: '1.3.0',APIKEY:"EFAB70F4-EFB1-3AF1-9E61-34A79EB32D2D",DOMAIN:"http://localhost:8080" }, 
+			{projection:"EPSG:3857",resolutions : satelliteLayer.resolutions,maxExtent: new SuperMap.Bounds(-20037508.34 , -20037508.34,20037508.34 , 20037508.34),isBaseLayer :false}
+		);
+		wms2.CLASS_NAME = "SuperMap.Layer.VWMS";
+		
 		// imsangdo8c = new SuperMap.Layer.TiledDynamicRESTLayer(
 		// "임상도 8c", url2,
 		// {
@@ -301,7 +315,16 @@ var smEvent = {
 						pLayer.type = "REST";
 						pLayer.url = layer.url;
 						pLayer.layersID = layer.params.layersID;
-						// console.log(pLayer.layersID);
+						layerInfos.push(pLayer);
+					} else if(layer.CLASS_NAME == "SuperMap.Layer.VWMS"){
+						pLayer.type = "VWMS";
+						pLayer.url = layer.url;
+						pLayer.params = layer.params;
+						layerInfos.push(pLayer);
+					}  else if(layer.CLASS_NAME == "SuperMap.Layer.WMS"){
+						pLayer.type = "WMS";
+						pLayer.url = layer.url;
+						pLayer.params = layer.params;
 						layerInfos.push(pLayer);
 					} else if (layer.CLASS_NAME == "SuperMap.Layer.Vector") {
 						console.log(layer.style);
@@ -373,6 +396,7 @@ var smEvent = {
 					            	 "extent" : map.getExtent().transform(new SuperMap.Projection('EPSG:3857'),new SuperMap.Projection('EPSG:5186'))
 					             }],
 					"scale" : map.getScale(),
+					"resolution" : map.getResolution(),
 					"title" : $("#printTitle").val(),
 					"content" : $("#printContent").val()
 				},

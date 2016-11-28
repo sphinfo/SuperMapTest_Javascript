@@ -96,22 +96,22 @@ div {
 				})
 			]
 		});
-// 		baseLayer = new SuperMap.Layer.TiledDynamicRESTLayer(
-// 			"기본", "http://61.32.6.18:9090/iserver/services/vworld/rest/maps/OSM", 
-// 			//"기본", "http://localhost:8090/iserver/services/vworld/rest/maps/OSM", 
-// 			{
-// 				transparent: true, 
-// 				cacheEnabled: false
-// 			},{
-// 				projection:'EPSG:3857',
-// 				isBaseLayer :true
-// 			}
-// 		);
-		baseLayer = new SuperMap.Layer.VWorldLayer("Base");
-		baseLayer.url = [ 'http://xdworld.vworld.kr:8080/2d/Base/201512/${z}/${x}/${y}.png' ];
+		baseLayer = new SuperMap.Layer.TiledDynamicRESTLayer(
+			"기본", "http://61.32.6.18:9090/iserver/services/vworld/rest/maps/OSM", 
+			//"기본", "http://localhost:8090/iserver/services/vworld/rest/maps/OSM", 
+			{
+				transparent: true, 
+				cacheEnabled: false
+			},{
+				projection:'EPSG:3857',
+				isBaseLayer :true
+			}
+		);
+// 		baseLayer = new SuperMap.Layer.VWorldLayer("Base");
+// 		baseLayer.url = [ 'http://xdworld.vworld.kr:8080/2d/Base/201512/${z}/${x}/${y}.png' ];
 
 		testLayer = new SuperMap.Layer.TiledDynamicRESTLayer(
-			"BUS_TEXR_BOUND", "http://192.168.0.39:8090/iserver/services/map-bus_route/rest/maps/BUS_ROUTE_TEXR_BOUND", 
+			"BUS_TEXR_BOUND", "http://211.44.239.144:8090/iserver/services/map-map1/rest/maps/BUS_ROUTE", 
 			//"test", "http://192.168.0.39:8090/iserver/services/map-bus_route/rest/maps/BUS_ROUTE", 
 			{
 				transparent: true, 
@@ -122,26 +122,27 @@ div {
 				scales :  baseLayer.scales
 			}
 		);
-		testLayer2 = new SuperMap.Layer.TiledDynamicRESTLayer(
-			//"test", "http://192.168.0.39:8090/iserver/services/map-bus_route/rest/maps/BUS_ROUTE_TEXR_BOUND", 
-			"BUS_ROUTE", "http://192.168.0.39:8090/iserver/services/map-bus_route/rest/maps/BUS_ROUTE", 
-			{
-				transparent: true, 
-				cacheEnabled: false
-			},{
-				projection:'EPSG:3857',
-				isBaseLayer :false,
-				scales :  baseLayer.scales
-			}
-		);
+// 		testLayer2 = new SuperMap.Layer.TiledDynamicRESTLayer(
+// 			//"test", "http://192.168.0.39:8090/iserver/services/map-bus_route/rest/maps/BUS_ROUTE_TEXR_BOUND", 
+// 			"BUS_ROUTE", "http://192.168.0.39:8090/iserver/services/map-bus_route/rest/maps/BUS_ROUTE", 
+// 			{
+// 				transparent: true, 
+// 				cacheEnabled: false
+// 			},{
+// 				projection:'EPSG:3857',
+// 				isBaseLayer :false,
+// 				scales :  baseLayer.scales
+// 			}
+// 		);
 		testLayer.setOpacity(0.8);
 		testLayer.setVisibility(true);
 		
 		testLayer.events.on({
 			"layerInitialized" : addLayer,
-			"loadend" :function(){
+			"loadstart" :function(){
 				//testLayer.canvasContext.clearRect(0,0,400,400);
 				//testLayer.redraw()
+				//testLayer.canvasContext.clearRect(0,0,testLayer.canvas.width,testLayer.canvas.height);
 			}
 		});
 		$("#testBtn").on("click",function(){
@@ -164,7 +165,7 @@ div {
 			tempLayer.projection = 'EPSG:3857';
 			tempLayer.maxExtent = baseLayer.maxExtent;
 			
-			map.addLayers([baseLayer,testLayer,testLayer2,tempLayer]);
+			map.addLayers([baseLayer,testLayer,tempLayer]);
 			map.setCenter(new SuperMap.LonLat(14174150.9795765, 4495339.98139926), 7);
 			getData();
 			

@@ -97,8 +97,9 @@ var superMapInit = {
 	//Asynchronous loading layer
 	addLayer : function(){
 		$("img").attr('crossOrigin', 'anonymous');//img.setAttribute('crossOrigin', 'anonymous');
-		superMapInit.map.addLayers([baseLayer, satelliteLayer,hybridLayer,imsangdo7c,vectorLayer,drawLayer,editLayer,searchLayer]);
+		superMapInit.map.addLayers([baseLayer, satelliteLayer,hybridLayer,imsangdo7c,wms,wms2,vectorLayer,drawLayer,editLayer,searchLayer]);
 		superMapInit.map.setCenter(new SuperMap.LonLat(14174150.9795765, 4495339.98139926), 7);
+		console.log(wms2);
 		//superMapInit.getEditData();
 	},
 	processFailed : function (e) {
