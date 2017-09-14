@@ -186,7 +186,8 @@ var smEvent = {
 		imsangdo7c.events.on({
 			"layerInitialized" : superMapInit.addLayer,
 			"loadend" : function() {
-
+				$("#map img").attr("alt","test");
+				$("#map canvas").attr("alt","test");
 			}
 		});
 	},
@@ -255,12 +256,12 @@ var smEvent = {
 				//"orientation" : "Landscape",
 				"html" :mapViewPort.children().html()
 			});
-			getServerResource("image",jsonParameters,function(json){
+			getServerResource("capture",jsonParameters,function(json){
 				var result = SuperMap.Util.transformResult(json);
-				var pdfurl = host+"/" + result.path;
+				var pdfurl = "download.jsp?url="+host+"/" + result.path;
+				alert(pdfurl);
 				var link = document.createElement('a');
 				link.href = pdfurl;
-				link.download = 'Download.png';
 				link.target= "_blank";
 				document.body.appendChild(link);
 				link.click();
@@ -528,8 +529,8 @@ var smEvent = {
 		});
 
 		$("#btnSearch").on("click", function() {
-			// superMapInit.queryResult();
-			drawPointCompleted();
+			 superMapInit.queryResult();
+			//drawPointCompleted();
 		});
 	}
 }

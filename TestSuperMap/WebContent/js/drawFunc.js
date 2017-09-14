@@ -1,9 +1,10 @@
 SmDraw = {
 	control : function(){
 		// 텍스트, 선, 면 그리기 도구 설정 
+
 		superMapInit.drawPoint = new SuperMap.Control.DrawFeature(drawLayer, SuperMap.Handler.Point, { multi: false,persist:true,double:false});
-		superMapInit.drawLine = new SuperMap.Control.DrawFeature(drawLayer, SuperMap.Handler.Path, { multi: false});
-		superMapInit.drawPolygon = new SuperMap.Control.DrawFeature(drawLayer, SuperMap.Handler.Polygon);
+		superMapInit.drawLine = new SuperMap.Control.DrawFeature(drawLayer, SuperMap.Handler.Path, { multi: false,handlerOptions:{freehand:true}});
+		superMapInit.drawPolygon = new SuperMap.Control.DrawFeature(drawLayer, SuperMap.Handler.Polygon,{handlerOptions:{freehand:true}});
 		
 		// 그리기 수정 도구 설정 
 		modifyFeature = new SuperMap.Control.ModifyFeature(drawLayer);

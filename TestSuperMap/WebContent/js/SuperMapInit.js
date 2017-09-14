@@ -58,11 +58,12 @@ var superMapInit = {
             var scale3857 = 0.0127/dpi/res3857;
             this.scales.push(scale3857);
         }
+        var mapExtent = new SuperMap.Bounds(13730000, 3860000,14840000, 4680000);
 		map=superMapInit.map = new SuperMap.Map("map", {
 			units:"m",
 			numZoomLevels : 19,
 			//allOverlays : true ,
-			//restrictedExtent :mapExtent,
+			restrictedExtent :mapExtent,
 			//maxExtent : mapExtent,
 			//minResolution  : superMapInit.resolutions[6] ,
 			///maxResolution :"auto",
@@ -180,12 +181,12 @@ var superMapInit = {
     },
 	queryResult : function(){
 		vectorLayer.removeAllFeatures();
-		var url4=host+"/iserver/services/data-vWorld_Test/rest/data";
+		var url4="http://192.168.0.78:9095/iserver/services/data-Change_SuperMan/rest/data";
 		var getFeaturesByIDsParameters, getFeaturesByIDsService;
 		
 		getFeaturesByIDsParameters = new SuperMap.REST.GetFeaturesByIDsParameters({
 			returnContent: true,
-			datasetNames: ["sgg3:TB_FGDI_LP_AA_SGG"],
+			datasetNames: ["PostgreSQL:TL_SCCO_EMD"],
 			fromIndex: 0,
 			toIndex:-1,
 			IDs: [7]
@@ -195,7 +196,9 @@ var superMapInit = {
 		$.ajax({
 			async : false ,
 			url : url4+"/featureResults.jsonp?returnContent=true",
+			crossDomain  : true,
 			dataType : "jsonp",
+			contentType : "appliction/geojson",
 			method : "POST",
 			data :{
 				'requestEntity': parms
@@ -203,36 +206,38 @@ var superMapInit = {
 			},
 			success : function(json){
 				console.log(json);
-				var result = SuperMap.REST.GetFeaturesResult.fromJson(json);
-				if (result && result.features) {
-					$.each(result.features,function(idx,feature){
-						var geometry = feature.geometry.transform(
-					    	new SuperMap.Projection('EPSG:5179'), 
-					        new SuperMap.Projection('EPSG:900913')
-					    );
-						var transformedFeature = new SuperMap.Feature.Vector(geometry, feature.data, style2);
-						vectorLayer.addFeatures(transformedFeature);
-						console.log(transformedFeature);
-					});
-				}
+//				var result = SuperMap.REST.GetFeaturesResult.fromJson(json);
+//				if (result && result.features) {
+//					$.each(result.features,function(idx,feature){
+//						var geometry = feature.geometry.transform(
+//					    	new SuperMap.Projection('EPSG:5179'), 
+//					        new SuperMap.Projection('EPSG:900913')
+//					    );
+//						var transformedFeature = new SuperMap.Feature.Vector(geometry, feature.data, style2);
+//						vectorLayer.addFeatures(transformedFeature);
+//						console.log(transformedFeature);
+//					});
+//				}
+			}, error : function(error){
+				console.log(error);
 			}
 		});
 		
-		getFeaturesByIDsParameters = new SuperMap.REST.GetFeaturesByIDsParameters({
-			returnContent: true,
-			datasetNames: ["sgg3:TB_FGDI_LP_AA_SGG"],
-			fromIndex: 0,
-			toIndex:-1,
-			IDs: [8,9,10]
-		});
-		
-		getFeaturesByIDsService = new SuperMap.REST.GetFeaturesByIDsService(url4, {
-			eventListeners: {
-				"processCompleted": superMapInit.processCompleted, 
-				"processFailed": superMapInit.processFailed
-			}
-		});
-		getFeaturesByIDsService.processAsync(getFeaturesByIDsParameters);
+//		getFeaturesByIDsParameters = new SuperMap.REST.GetFeaturesByIDsParameters({
+//			returnContent: true,
+//			datasetNames: ["sgg3:TB_FGDI_LP_AA_SGG"],
+//			fromIndex: 0,
+//			toIndex:-1,
+//			IDs: [8,9,10]
+//		});
+//		
+//		getFeaturesByIDsService = new SuperMap.REST.GetFeaturesByIDsService(url4, {
+//			eventListeners: {
+//				"processCompleted": superMapInit.processCompleted, 
+//				"processFailed": superMapInit.processFailed
+//			}
+//		});
+//		getFeaturesByIDsService.processAsync(getFeaturesByIDsParameters);
 		
 	},
 	processCompleted : function(queryEventArgs){
@@ -302,7 +307,8 @@ function processCompleted(getFeaturesEventArgs) {
 function getServerResource(type,jsonParameters,callback){
 	//var host = "http://61.32.6.18:18080/iserver";
 	var host = "http://localhost:8090/iserver";
-	var capturUrl = host+"/services/spatialanalyst-sample/restjsr/"+type+".jsonp";
+	
+	var capturUrl = host+"/services/data-test/restjsr/"+type+".jsonp";
 	var restService = new SuperMap.ServiceBase(capturUrl+"?returnContent=true");
 	restService.isInTheSameDomain = false;
 	
